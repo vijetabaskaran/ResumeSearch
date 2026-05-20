@@ -1,1 +1,21 @@
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+env/
+
+# Uploaded files
+uploads/
+
+# Environment variables
 .env
+
+# VS Code
+.vscode/
+
+# Temporary PDFs
+temp.pdf
+uploaded.pdf

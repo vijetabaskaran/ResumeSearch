@@ -203,9 +203,7 @@ Resume:
                 "name": name,
 
                 "skills": extracted_skills,
-
-                "resume_url": resume_url if resume_url else file.filename
-
+                "resume_url": resume_url if resume_url else file.filename    
             }
 
         )

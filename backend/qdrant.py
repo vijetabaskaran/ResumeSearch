@@ -45,7 +45,7 @@ if not client.collection_exists(collection_name):
         vectors_config={
 
             "skills": VectorParams(
-                size=384,
+                size=768,
                 distance=Distance.COSINE
             )
 
@@ -66,7 +66,7 @@ else:
 print("\nLoading Embedding Model...")
 
 embedding_model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
+    "BAAI/bge-base-en-v1.5"
 )
 
 print("Embedding Model Loaded Successfully")

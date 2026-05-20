@@ -55,37 +55,42 @@ def search_resume(skill: str):
 
         matched_resumes = []
 
-        # ==========================================
-        # FILTER USING SCORE
-        # ==========================================
-
-        print("\n========== SEARCH RESULTS ==========")
-
+        searched_skill = skill.lower().strip()
         for point in search_result.points:
 
-            print("\nFULL POINT:")
-            print(point)
-
-            print("\nCandidate Name:")
-            print(point.payload.get("name"))
-
-            print("\nStored Skills:")
-            print(point.payload.get("skills"))
-
-            print("\n========== STORED PAYLOAD ==========")
-            print(point.payload)
-
-            print("\nSimilarity Score:")
-            print(point.score)
+            stored_skills = point.payload.get(
+                "skills",
+                ""
+            ).lower()
 
             score = point.score
 
-            matched_resumes.append({
-                "name": point.payload.get("name"),
-                "resume_url": point.payload.get("resume_url"),
-                "skills": point.payload.get("skills"),
-                "score": round(score, 4)
-            })
+            print("\nCandidate:")
+            print(point.payload.get("name"))
+
+            print("Stored Skills:")
+            print(stored_skills)
+
+            print("Score:")
+            print(score)
+
+            # ==========================================
+            # EXACT SKILL + THRESHOLD FILTER
+            # ==========================================
+
+            if searched_skill in stored_skills and score >= 0.25:
+
+                matched_resumes.append({
+
+                    "name": point.payload.get("name"),
+
+                    "resume_url": point.payload.get("resume_url"),
+
+                    "skills": point.payload.get("skills"),
+
+                    "score": round(score, 4)
+
+                })
 
         # ==========================================
         # NO MATCH FOUND (handled after sorting)
