@@ -1,29 +1,31 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from qdrant_client.models import PointStruct
 from qdrant import client, collection_name, embedding_model
 from ai_model import groq_client
 
-import requests
 import fitz
 import uuid
+import os
+import requests
+import urllib.parse
 
 router = APIRouter()
+
+# Absolute path to uploads directory (same as what app.py mounts)
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 print("Insert Resume Router Loaded")
 
 # ==========================================
-# INSERT RESUME
+# INSERT RESUME (File and URL upload supported)
 # ==========================================
 
 @router.post("/insert_resume")
 async def insert_resume(
-
     name: str = Form(...),
-
-    resume_url: str = Form(None),
-
-    file: UploadFile = File(None)
-
+    file: UploadFile = File(None),
+    resume_url: str = Form(None)
 ):
 
     try:
@@ -34,46 +36,56 @@ async def insert_resume(
 
         print(f"Candidate Name: {name}")
 
-        pdf_text = ""
+        if not file and not resume_url:
+            return {"error": "Please provide either a PDF file or a PDF URL."}
 
-        # ==========================================
-        # URL PDF
-        # ==========================================
-
-        if resume_url:
-
-            print("\nResume Upload Method: URL")
-            print(f"Resume URL: {resume_url}")
-
-            print("\nDownloading PDF from URL...")
-
-            response = requests.get(resume_url)
-
-            with open("temp.pdf", "wb") as f:
-                f.write(response.content)
-
-            print("PDF Downloaded Successfully")
-
-            doc = fitz.open("temp.pdf")
-
-        # ==========================================
-        # FILE PDF
-        # ==========================================
-
-        else:
-
-            print("\nResume Upload Method: File")
-
+        if file:
             print(f"Uploaded File Name: {file.filename}")
+            if not file.filename.lower().endswith(".pdf"):
+                return {"error": "Only PDF files are supported."}
 
             contents = await file.read()
 
-            with open("uploaded.pdf", "wb") as f:
+            file_uuid = str(uuid.uuid4())
+            safe_filename = f"{file_uuid}_{file.filename}"
+            filepath = os.path.join(UPLOAD_DIR, safe_filename)
+
+            with open(filepath, "wb") as f:
                 f.write(contents)
 
-            print("PDF File Saved Successfully")
+            print("PDF File Saved Successfully at:", filepath)
+        else:
+            # Download PDF from URL
+            resume_url_str = resume_url.strip()
+            print(f"Uploaded PDF URL: {resume_url_str}")
+            if not (resume_url_str.startswith("http://") or resume_url_str.startswith("https://")):
+                return {"error": "Invalid URL. Must start with http:// or https://"}
 
-            doc = fitz.open("uploaded.pdf")
+            try:
+                response = requests.get(resume_url_str, timeout=20)
+                if response.status_code != 200:
+                    return {"error": f"Failed to download PDF from URL (Status code: {response.status_code})"}
+                contents = response.content
+            except Exception as e:
+                return {"error": f"Error downloading PDF from URL: {str(e)}"}
+
+            parsed_url = urllib.parse.urlparse(resume_url_str)
+            url_filename = os.path.basename(parsed_url.path)
+            if not url_filename.lower().endswith(".pdf"):
+                url_filename = "resume.pdf"
+
+            file_uuid = str(uuid.uuid4())
+            safe_filename = f"{file_uuid}_{url_filename}"
+            filepath = os.path.join(UPLOAD_DIR, safe_filename)
+
+            with open(filepath, "wb") as f:
+                f.write(contents)
+
+            print("PDF URL Saved Successfully at:", filepath)
+
+        resume_url = f"http://127.0.0.1:8000/uploads/{safe_filename}"
+
+        doc = fitz.open(filepath)
 
         # ==========================================
         # EXTRACT TEXT
@@ -81,6 +93,7 @@ async def insert_resume(
 
         print("\nExtracting Text From PDF...")
 
+        pdf_text = ""
         for page in doc:
 
             pdf_text += page.get_text()
@@ -203,7 +216,7 @@ Resume:
                 "name": name,
 
                 "skills": extracted_skills,
-                "resume_url": resume_url if resume_url else file.filename    
+                "resume_url": resume_url
             }
 
         )

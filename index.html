@@ -23,8 +23,8 @@
         }
 
         body {
-            background: #07111f;
-            color: white;
+            background: #0a0a0a;
+            color: #b8a5a5;
             overflow-x: hidden;
         }
 
@@ -194,22 +194,40 @@
             font-weight: 700;
         }
 
-        /* TABLE */
+/* TABLE */
 
-        .table {
-            color: white;
-        }
+.table {
+    background-color: #1e293b;   /* table background */
+    color: #ffffff;              /* text color */
+    border-color: #334155;
+}
 
-        .table-dark {
-            background: #111827;
-        }
+.table thead {
+    background-color: #0f172a;   /* header background */
+}
 
-        .table td,
-        .table th {
-            padding: 15px;
-            vertical-align: middle;
-        }
+.table th {
+    color: #aab8be;              /* header text color */
+    padding: 15px;
+    vertical-align: middle;
+    border-color: #334155;
+}
 
+.table td {
+    background-color: #1e293b;   /* row background */
+    color: #737a83;              /* row text color */
+    padding: 15px;
+    vertical-align: middle;
+    border-color: #334155;
+}
+
+.table tbody tr:hover {
+    background-color: #334155;   /* hover effect */
+}
+
+.table-dark {
+    background-color: #0f172a !important;
+}
         /* INPUTS */
 
         .form-control,
@@ -256,7 +274,7 @@
         .footer-contact {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            right: 110px;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
             padding: 15px 20px;
@@ -264,6 +282,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             font-size: 14px;
             color: white;
+            z-index: 999;
         }
 
         /* TITLES */
@@ -343,7 +362,7 @@
 
         body.light-mode .form-control:focus,
         body.light-mode .form-select:focus {
-            background: #fff;
+            background: #040725;
             color: #333;
         }
 
@@ -356,421 +375,690 @@
             color: #333;
             border: 1px solid #ddd;
         }
+
+        /* ROLE ACCESS CONTROL */
+        body.logged-out #appWrapper {
+            display: none !important;
+        }
+
+        body.logged-out #loginWrapper {
+            display: flex !important;
+        }
+
+        body:not(.logged-out) #appWrapper {
+            display: block !important;
+        }
+
+        body:not(.logged-out) #loginWrapper {
+            display: none !important;
+        }
+
+        body.user-candidate .role-official {
+            display: none !important;
+        }
+
+        body.user-official .role-candidate {
+            display: none !important;
+        }
+
+        /* DYNAMIC GRID ADJUSTMENTS */
+        body.user-official #dashboard .dashboard-row>div {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        body.user-candidate #dashboard .dashboard-row>div {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        /* GLOWING BLOBS */
+        .glowing-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.18;
+            animation: floatBlob 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .blob1 {
+            width: 350px;
+            height: 350px;
+            background: #00c6ff;
+            top: 15%;
+            left: 15%;
+        }
+
+        .blob2 {
+            width: 450px;
+            height: 450px;
+            background: #0072ff;
+            bottom: 15%;
+            right: 15%;
+            animation-delay: -7s;
+        }
+
+        @keyframes floatBlob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, -70px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+        }
+
+        /* LIGHT MODE OVERRIDES FOR NEW ELEMENTS */
+        body.light-mode #loginWrapper {
+            background: radial-gradient(circle at 10% 20%, rgba(0, 198, 255, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(0, 114, 255, 0.08) 0%, transparent 40%) !important;
+        }
+
+        body.light-mode .login-card {
+            background: #ffffff !important;
+            border: 1px solid #ddd !important;
+            color: #333 !important;
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        body.light-mode #userProfile {
+            border-bottom: 1px solid #ddd;
+        }
+
+        body.light-mode #userProfileName {
+            color: #333 !important;
+        }
+
+        body.light-mode #userRoleBadge {
+            color: #0072ff !important;
+        }
+
+        body.light-mode #nav-logout {
+            border-top: 1px solid #ddd !important;
+        }
+
+        body.light-mode .form-label {
+            color: #555 !important;
+        }
+
+        body.logged-out #floatingChatbot {
+            display: none !important;
+        }
+
+        .chat-msg-ai {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        body.light-mode .chat-msg-ai {
+            background: #f0f4f8;
+            border: 1px solid #e2e8f0;
+            color: #333;
+        }
     </style>
+
 
 </head>
 
 <body>
 
-    <div class="container-fluid">
+    <!-- GLOWING BACKGROUND BLOBS -->
+    <div class="glowing-blob blob1"></div>
+    <div class="glowing-blob blob2"></div>
 
-        <div class="row">
+    <!-- LOGIN WRAPPER -->
+    <div id="loginWrapper"
+        style="display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; overflow: hidden; width: 100%;">
+        <div class="glass-card login-card"
+            style="width: 450px; padding: 40px; border-radius: 24px; box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10;">
+            <h2
+                style="font-weight: 700; margin-bottom: 10px; background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Ideal Tech Labs</h2>
+            <p style="color: #a0aec0; margin-bottom: 30px; font-size: 15px;">Resume Screening Portal</p>
 
-            <!-- SIDEBAR -->
-
-            <div class="col-md-2 sidebar">
-
-                <h3>
-                    Ideal Tech Labs
-                </h3>
-
-                <button onclick="showPage('home')">
-                    Home
-                </button>
-
-                <button onclick="showPage('dashboard')">
-                    Dashboard
-                </button>
-
-                <button onclick="showPage('resume')">
-                    Recruitment page
-                </button>
-
-                <button onclick="showPage('settings')">
-                    Settings
-                </button>
-
+            <div class="d-flex mb-4" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 4px;">
+                <button type="button" id="tab-candidate" class="btn w-50" onclick="setLoginRole('candidate')"
+                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: white; background: #0072ff; transition: 0.3s;">Candidate</button>
+                <button type="button" id="tab-official" class="btn w-50" onclick="setLoginRole('official')"
+                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: #bfc7d9; background: transparent; transition: 0.3s;">Official</button>
             </div>
 
-            <!-- MAIN CONTENT -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-3 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Username</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username"
+                        value="candidate" required
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                </div>
+                <div class="mb-4 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                </div>
 
-            <div class="col-md-10 main-content">
+                <div id="loginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500;">
+                </div>
 
-                <!-- HOME PAGE -->
+                <button type="submit" class="btn btn-primary w-100 py-3"
+                    style="border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);">
+                    Login to Portal
+                </button>
+            </form>
 
-                <div id="home" class="page active-page">
+            <!-- REGISTER FORM -->
+            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+                <div class="mb-3 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Full Name</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Enter your full name"
+                        required
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                </div>
+                <div class="mb-3 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Username</label>
+                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username"
+                        required
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                </div>
+                <div class="mb-3 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a password"
+                        required
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                </div>
+                <div class="mb-4 text-start">
+                    <label class="form-label"
+                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Register As</label>
+                    <select id="registerRole" class="form-select"
+                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                        <option value="candidate" style="background: #0f172a; color: white;">Candidate</option>
+                        <option value="official" style="background: #0f172a; color: white;">Official</option>
+                    </select>
+                </div>
 
-                    <div class="hero-section">
+                <div id="registerError" class="text-danger mb-3"
+                    style="display: none; font-size: 14px; font-weight: 500;"></div>
+                <div id="registerSuccess" class="text-success mb-3"
+                    style="display: none; font-size: 14px; font-weight: 500;"></div>
 
-                        <div class="hero-content">
+                <button type="submit" class="btn btn-success w-100 py-3"
+                    style="border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(150, 201, 61, 0.3);">
+                    Create Account
+                </button>
+            </form>
 
-                            <h1 class="hero-title">
-                                Resume Screening - Ideal Tech Labs
-                            </h1>
+            <div class="mt-4" id="loginToggleArea">
+                <a href="javascript:void(0)" onclick="toggleAuthForm('register')"
+                    style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">Don't have an
+                    account? Register here</a>
+            </div>
+            <div class="mt-4" id="registerToggleArea" style="display: none;">
+                <a href="javascript:void(0)" onclick="toggleAuthForm('login')"
+                    style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">Already have an
+                    account? Login here</a>
+            </div>
 
-                            <p class="hero-text">
+            <div class="mt-4"
+                style="font-size: 12px; color: #718096; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <strong>Demo Access Details:</strong><br>
+                <span id="demo-credentials">Candidate Login: <b>candidate</b> / <b>password</b></span>
+            </div>
+        </div>
+    </div>
 
-                                Transform recruitment using Artificial Intelligence,
-                                semantic search, vector databases, and machine learning
-                                to identify the best candidates instantly.
+    <!-- MAIN APP STRUCTURE -->
+    <div id="appWrapper" style="display: none;">
 
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <!-- SIDEBAR -->
+
+                <div class="col-md-2 sidebar d-flex flex-column justify-content-between pb-4">
+                    <div>
+                        <h3>
+                            Ideal Tech Labs
+                        </h3>
+
+                        <!-- USER PROFILE IN SIDEBAR -->
+                        <div id="userProfile"
+                            style="padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border-radius: 12px; margin-left: 15px; margin-right: 15px;">
+                            <div style="font-size: 11px; color: #00c6ff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;"
+                                id="userRoleBadge">Candidate</div>
+                            <div style="font-size: 15px; font-weight: 600; color: white; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                                id="userProfileName">Candidate User</div>
+                        </div>
+
+                        <button onclick="showPage('home')">
+                            Home
+                        </button>
+
+                        <button id="nav-dashboard" onclick="showPage('dashboard')">
+                            Dashboard
+                        </button>
+
+                        <button id="nav-recruitment" onclick="showPage('resume')">
+                            Recruitment page
+                        </button>
+
+                        <button onclick="showPage('settings')">
+                            Settings
+                        </button>
+                    </div>
+
+                    <div class="px-3 w-100 mt-auto">
+                        <button id="nav-logout" onclick="handleLogout()"
+                            style="color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); border-radius: 12px; padding: 12px; text-align: center; width: 100%; transition: 0.3s; background: rgba(255, 77, 77, 0.05); font-weight: 600;">
+                            Logout
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- MAIN CONTENT -->
+
+                <div class="col-md-10 main-content">
+
+                    <!-- HOME PAGE -->
+
+                    <div id="home" class="page active-page">
+
+                        <div class="hero-section">
+
+                            <div class="hero-content">
+
+                                <h1 class="hero-title">
+                                    Resume Screening - Ideal Tech Labs
+                                </h1>
+
+                                <p class="hero-text">
+
+                                    Transform recruitment using Artificial Intelligence,
+                                    semantic search, vector databases, and machine learning
+                                    to identify the best candidates instantly.
+
+                                </p>
+
+                                <button class="hero-btn" onclick="showPage('dashboard')">
+                                    Explore Platform
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-5">
+
+                            <div class="col-md-4 mb-4">
+
+                                <div class="glass-card">
+
+                                    <h4>
+                                        AI Recruitment
+                                    </h4>
+
+                                    <p class="mt-3">
+
+                                        Smart AI-powered resume analysis and hiring automation.
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+
+                                <div class="glass-card">
+
+                                    <h4>
+                                        Cloud Infrastructure
+                                    </h4>
+
+                                    <p class="mt-3">
+
+                                        Scalable cloud systems for enterprise recruitment.
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 mb-4">
+
+                                <div class="glass-card">
+
+                                    <h4>
+                                        Partners
+                                    </h4>
+
+                                    <p class="mt-3">
+
+                                        Microsoft, AWS, Google Cloud, OpenAI
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- DASHBOARD -->
+
+                    <div id="dashboard" class="page">
+
+                        <h2 class="section-title" id="dashboard-title">
+                            Recruitment Dashboard
+                        </h2>
+
+                        <div class="row dashboard-row">
+
+                            <!-- Total Resumes Received (Official only) -->
+                            <div class="col-md-4 mb-4 role-official">
+
+                                <div class="card-box">
+
+                                    <h5>
+                                        Total Resumes Received
+                                    </h5>
+
+                                    <h2 id="resumeCount">
+                                        0
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Open Roles (Candidate only) -->
+                            <div class="col-md-4 mb-4 role-candidate">
+
+                                <div class="card-box">
+
+                                    <h5>
+                                        Open Roles
+                                    </h5>
+
+                                    <h2>
+                                        18
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Departments (Candidate only) -->
+                            <div class="col-md-4 mb-4 role-candidate">
+
+                                <div class="card-box">
+
+                                    <h5>
+                                        Departments
+                                    </h5>
+
+                                    <h2>
+                                        6
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Resumes Received (Official only) -->
+                        <div class="glass-card mt-4 role-official">
+                            <h4>Resumes Received</h4>
+                            <div id="resumesReceivedList" class="mt-3">
+                                <p class="text-muted">Loading received resumes...</p>
+                            </div>
+                        </div>
+
+                        <!-- Received Emails (Official only) -->
+                        <div class="glass-card mt-4 role-official">
+                            <h4>Received Emails (Inquiries)</h4>
+                            <div id="emailsReceivedList" class="mt-3">
+                                <p class="text-muted">Loading received emails...</p>
+                            </div>
+                        </div>
+
+                        <!-- Available Roles (Candidate only) -->
+                        <div class="glass-card mt-4 role-candidate">
+
+                            <h4>
+                                Available Roles
+                            </h4>
+
+                            <table class="table table-bordered mt-4">
+
+                                <thead class="table-dark">
+
+                                    <tr>
+
+                                        <th>Role</th>
+                                        <th>Experience</th>
+                                        <th>Location</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <tr>
+
+                                        <td>Python Developer</td>
+                                        <td>2+ Years</td>
+                                        <td>Chennai</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Machine Learning Engineer</td>
+                                        <td>1+ Years</td>
+                                        <td>Bangalore</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Frontend Developer</td>
+                                        <td>Fresher</td>
+                                        <td>Remote</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Cloud Engineer</td>
+                                        <td>2+ Years</td>
+                                        <td>Hyderabad</td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RESUME PAGE -->
+
+                     <div id="resume" class="page">
+
+                        <!-- Candidate Upload Section (Candidate Only) -->
+                        <div class="glass-card role-candidate mb-4">
+
+                            <h2 class="section-title">
+                                Resume Upload
+                            </h2>
+
+                            <p class="mb-4">
+                                Upload your resume as a PDF file or provide a PDF URL link.
                             </p>
 
-                            <button class="hero-btn" onclick="showPage('dashboard')">
-                                Explore Platform
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div class="row mt-5">
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="glass-card">
-
-                                <h4>
-                                    AI Recruitment
-                                </h4>
-
-                                <p class="mt-3">
-
-                                    Smart AI-powered resume analysis and hiring automation.
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="glass-card">
-
-                                <h4>
-                                    Cloud Infrastructure
-                                </h4>
-
-                                <p class="mt-3">
-
-                                    Scalable cloud systems for enterprise recruitment.
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="glass-card">
-
-                                <h4>
-                                    Partners
-                                </h4>
-
-                                <p class="mt-3">
-
-                                    Microsoft, AWS, Google Cloud, OpenAI
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- DASHBOARD -->
-
-                <div id="dashboard" class="page">
-
-                    <h2 class="section-title">
-                        Recruitment Dashboard
-                    </h2>
-
-                    <div class="row">
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="card-box">
-
-                                <h5>
-                                    Total Resumes Received
-                                </h5>
-
-                                <h2 id="resumeCount">
-                                    0
-                                </h2>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="card-box">
-
-                                <h5>
-                                    Open Roles
-                                </h5>
-
-                                <h2>
-                                    18
-                                </h2>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4 mb-4">
-
-                            <div class="card-box">
-
-                                <h5>
-                                    Departments
-                                </h5>
-
-                                <h2>
-                                    6
-                                </h2>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="glass-card mt-4">
-
-                        <h4>
-                            Available Roles
-                        </h4>
-
-                        <table class="table table-bordered mt-4">
-
-                            <thead class="table-dark">
-
-                                <tr>
-
-                                    <th>Role</th>
-                                    <th>Experience</th>
-                                    <th>Location</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                <tr>
-
-                                    <td>Python Developer</td>
-                                    <td>2+ Years</td>
-                                    <td>Chennai</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Machine Learning Engineer</td>
-                                    <td>1+ Years</td>
-                                    <td>Bangalore</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Frontend Developer</td>
-                                    <td>Fresher</td>
-                                    <td>Remote</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Cloud Engineer</td>
-                                    <td>2+ Years</td>
-                                    <td>Hyderabad</td>
-
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-                <!-- RESUME PAGE -->
-
-                <div id="resume" class="page">
-
-                    <div class="glass-card">
-
-                        <h2 class="section-title">
-                            Resume Upload
-                        </h2>
-
-                        <p class="mb-4">
-                            Upload candidate resumes using PDF URL or PDF file.
-                        </p>
-
-                        <form id="resumeForm">
-
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    Candidate Name
-                                </label>
-                                <input type="text" class="form-control" id="candidateName"
-                                    placeholder="Enter candidate name" />
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label d-block">
-                                    Upload Method
-                                </label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="uploadMethod" id="methodUrl"
-                                        value="url" checked onchange="toggleUploadMethod()">
-                                    <label class="form-check-label" for="methodUrl">PDF URL</label>
+                            <form id="resumeForm">
+
+                                <div class="mb-4">
+                                    <label class="form-label">
+                                        Candidate Name
+                                    </label>
+                                    <input type="text" class="form-control" id="candidateName"
+                                        placeholder="Enter candidate name" />
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="uploadMethod" id="methodFile"
-                                        value="file" onchange="toggleUploadMethod()">
-                                    <label class="form-check-label" for="methodFile">PDF File</label>
+
+                                <div class="mb-4">
+                                    <label class="form-label d-block">Upload Method</label>
+                                    <div class="d-flex gap-4 mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="uploadMethod" id="methodFile" value="file" checked onchange="toggleUploadMethod('file')">
+                                            <label class="form-check-label" for="methodFile" style="cursor: pointer; color: #bfc7d9;">
+                                                PDF File Upload
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="uploadMethod" id="methodUrl" value="url" onchange="toggleUploadMethod('url')">
+                                            <label class="form-check-label" for="methodUrl" style="cursor: pointer; color: #bfc7d9;">
+                                                PDF URL Link
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="mb-4" id="urlInputGroup">
-                                <label class="form-label">
-                                    Resume PDF URL
+                                <div class="mb-4" id="fileInputGroup">
+                                    <label class="form-label">
+                                        Upload PDF File
+                                    </label>
+                                    <input type="file" class="form-control" id="resumeFile" accept=".pdf" />
+                                </div>
+
+                                <div class="mb-4" id="urlInputGroup" style="display: none;">
+                                    <label class="form-label">
+                                        Resume PDF URL
+                                    </label>
+                                    <input type="url" class="form-control" id="resumeUrl" placeholder="Enter PDF URL (e.g. https://example.com/resume.pdf)" />
+                                </div>
+
+                                <button type="button" class="btn btn-primary" onclick="uploadResume()">
+                                    Upload Resume
+                                </button>
+
+                                <label class="text-success mt-3 d-block" id="successMessage" style="display:none;">
+                                    Resume uploaded successfully!
                                 </label>
-                                <input type="text" class="form-control" id="resumeURL"
-                                    placeholder="Enter resume PDF URL" />
-                            </div>
 
-                            <div class="mb-4" id="fileInputGroup" style="display: none;">
-                                <label class="form-label">
-                                    Upload PDF File
-                                </label>
-                                <input type="file" class="form-control" id="resumeFile" accept=".pdf" />
-                            </div>
+                            </form>
 
-                            <button type="button" class="btn btn-primary" onclick="uploadResume()">
-                                Upload Resume
-                            </button>
-
-                            <label class="text-success mt-3 d-block" id="successMessage" style="display:none;">
-                                Hi, upload your resume!
-                            </label>
-
-                        </form>
-
-                        <hr class="my-5" style="border-color: rgba(255,255,255,0.2);">
-
-                        <h2 class="section-title">
-                            Search Resumes
-                        </h2>
-
-                        <div style="max-width:400px;">
-                            <input type="text" id="skillSearch" class="form-control" placeholder="Search skill" />
-                            <button class="btn btn-success mt-3 w-100" onclick="searchSkill()">
-                                Search Resume
-                            </button>
                         </div>
 
-                        <div id="searchResults" class="mt-5">
+                        <!-- Email HR Inquiry Form (Candidate Only) -->
+                        <div class="glass-card role-candidate mb-4">
+                            <h2 class="section-title">
+                                Email HR / Contact Support
+                            </h2>
+                            <p class="mb-4">
+                                Send a message or inquiry to HR/officials directly.
+                            </p>
+                            <form id="emailForm" onsubmit="sendHREmail(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Subject</label>
+                                    <input type="text" id="emailSubject" class="form-control"
+                                        placeholder="Enter subject" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Message</label>
+                                    <textarea id="emailMessage" class="form-control" rows="4"
+                                        placeholder="Type your message here..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Send Message
+                                </button>
+                            </form>
                         </div>
 
-                        <!-- AI ASSISTANT SECTION -->
+                        <!-- Official Search Section (Official Only) -->
+                        <div class="glass-card role-official mb-4">
 
-                        <hr class="my-5" style="border-color: rgba(255,255,255,0.2);">
+                            <h2 class="section-title">
+                                Search Resumes
+                            </h2>
 
-                        <h2 class="section-title">
-                            AI Assistant
-                        </h2>
+                            <div style="max-width:400px;">
+                                <input type="text" id="skillSearch" class="form-control" placeholder="Search skill" />
+                                <button class="btn btn-success mt-3 w-100" onclick="searchSkill()">
+                                    Search Resume
+                                </button>
+                            </div>
 
-                        <p class="mb-4">
-                            Ask AI about candidates, skills, interview questions, or resume suggestions.
-                        </p>
+                            <div id="searchResults" class="mt-5">
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+                    <!-- SETTINGS -->
+
+                    <div id="settings" class="page">
 
                         <div class="glass-card">
 
-                            <div class="mb-4">
+                            <h2 class="section-title">
+                                Settings
+                            </h2>
 
-                                <label class="form-label">
-                                    Ask AI
-                                </label>
+                            <div class="mt-4">
 
-                                <textarea id="aiQuestion" class="form-control" rows="4"
-                                    placeholder="Example: Give interview questions for Python Developer">
-        </textarea>
+                                <h5>
+                                    Theme Mode
+                                </h5>
+
+                                <select class="form-select" onchange="changeTheme(this.value)">
+
+                                    <option value="dark" selected>
+                                        Dark Mode
+                                    </option>
+
+                                    <option value="light">
+                                        Light Mode
+                                    </option>
+
+                                </select>
 
                             </div>
 
-                            <button class="btn btn-primary" onclick="askAI()">
-                                Ask AI Assistant
-                            </button>
+                            <div class="mt-4">
 
-                            <div id="aiResponse" class="mt-4 p-4" style="
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            min-height: 100px;
-            white-space: pre-wrap;
-        ">
-                                AI response will appear here...
+                                <h5>
+                                    System Version
+                                </h5>
+
+                                <p>
+                                    Resume AI Version 2.0.0
+                                </p>
+
                             </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- SETTINGS -->
-
-                <div id="settings" class="page">
-
-                    <div class="glass-card">
-
-                        <h2 class="section-title">
-                            Settings
-                        </h2>
-
-                        <div class="mt-4">
-
-                            <h5>
-                                Theme Mode
-                            </h5>
-
-                            <select class="form-select" onchange="changeTheme(this.value)">
-
-                                <option value="dark" selected>
-                                    Dark Mode
-                                </option>
-
-                                <option value="light">
-                                    Light Mode
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="mt-4">
-
-                            <h5>
-                                System Version
-                            </h5>
-
-                            <p>
-                                Resume AI Version 2.0.0
-                            </p>
 
                         </div>
 
@@ -782,19 +1070,191 @@
 
         </div>
 
+        <!-- CONTACT -->
+
+        <div class="footer-contact">
+
+            <b>Contact:</b> +91 9876543210
+            <br>
+            <b>Email:</b> hr@idealtechlabs.com
+
+        </div>
+
     </div>
 
-    <!-- CONTACT -->
+    <!-- FLOATING CHATBOT WIDGET -->
+    <div id="floatingChatbot" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <!-- Chat Toggle Button -->
+        <button id="chatbotToggleBtn" onclick="toggleChatbot()"
+            style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(175deg, #0072ff 0%, #00c6ff 100%); border: none; box-shadow: 0 8px 32px rgba(0, 114, 255, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s ease;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
 
-    <div class="footer-contact">
+        <!-- Chat Window -->
+        <div id="chatbotWindow" class="glass-card"
+            style="display: none; width: 380px; height: 500px; position: absolute; bottom: 80px; right: 0; border-radius: 20px; flex-direction: column; overflow: hidden; padding: 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15);">
+            <div
+                style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0; font-weight: 600; color: rgb(46, 33, 33);">AI Assistant</h5>
+                <button onclick="toggleChatbot()"
+                    style="background: none; border: none; color: rgb(136, 38, 38); cursor: pointer; padding: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
 
-        <b>Contact:</b> +91 9876543210
-        <br>
-        <b>Email:</b> hr@idealtechlabs.com
+            <div style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;"
+                id="chatbotBody">
+                <div class="chat-msg-ai"
+                    style="border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;">
+                    Hello! I'm your AI Recruitment Assistant. How can I help you today?
+                </div>
+            </div>
 
+            <div
+                style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); display: flex; gap: 10px;">
+                <input type="text" id="chatbotInput" class="form-control" placeholder="Type your question..."
+                    onkeydown="if(event.key === 'Enter') sendChatbotMessage()"
+                    style="padding: 10px 15px; font-size: 14px; flex: 1; border-radius: 10px;">
+                <button class="btn btn-primary" onclick="sendChatbotMessage()"
+                    style="padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
+
+        /* ROLE MANAGEMENT & LOGIN SYSTEM */
+        let selectedRole = 'candidate';
+
+        function setLoginRole(role) {
+            selectedRole = role;
+            const tabCand = document.getElementById('tab-candidate');
+            const tabOfficial = document.getElementById('tab-official');
+            const demoCreds = document.getElementById('demo-credentials');
+            const loginUser = document.getElementById('loginUsername');
+
+            if (role === 'candidate') {
+                tabCand.style.background = '#0072ff';
+                tabCand.style.color = 'white';
+                tabOfficial.style.background = 'transparent';
+                tabOfficial.style.color = '#bfc7d9';
+                demoCreds.innerHTML = 'Candidate Login: <b>candidate</b> / <b>password</b>';
+                loginUser.value = 'candidate';
+            } else {
+                tabOfficial.style.background = '#0072ff';
+                tabOfficial.style.color = 'white';
+                tabCand.style.background = 'transparent';
+                tabCand.style.color = '#bfc7d9';
+                demoCreds.innerHTML = 'Official Login: <b>official</b> / <b>password</b>';
+                loginUser.value = 'official';
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('resumeUser', JSON.stringify({
+                        role: data.role,
+                        name: data.name,
+                        username: data.username
+                    }));
+                    applyUserRole(data.role, data.name);
+                } else {
+                    errorDiv.innerText = data.message;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Login failed", error);
+                errorDiv.innerText = "Connection to login server failed.";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('resumeUser');
+            document.body.classList.remove('user-candidate', 'user-official');
+            document.body.classList.add('logged-out');
+
+            // Reset input values
+            document.getElementById('loginPassword').value = '';
+            setLoginRole('candidate');
+
+            // Clear search history
+            const skillSearch = document.getElementById('skillSearch');
+            if (skillSearch) skillSearch.value = '';
+            const searchResults = document.getElementById('searchResults');
+            if (searchResults) searchResults.innerHTML = '';
+
+            // Reset forms toggles
+            toggleAuthForm('login');
+
+            // Close chatbot if open
+            const chatWindow = document.getElementById('chatbotWindow');
+            if (chatWindow) chatWindow.style.display = 'none';
+            const toggleBtn = document.getElementById('chatbotToggleBtn');
+            if (toggleBtn) toggleBtn.style.transform = 'scale(1) rotate(0deg)';
+
+            showPage('home');
+        }
+
+        function applyUserRole(role, name) {
+            document.body.classList.remove('logged-out');
+            document.body.classList.remove('user-candidate', 'user-official');
+            document.body.classList.add('user-' + role);
+
+            // Show Profile Widget
+            document.getElementById('userProfile').style.display = 'block';
+            document.getElementById('userRoleBadge').innerText = role;
+            document.getElementById('userProfileName').innerText = name;
+
+            // Dynamic text updates for navigation sidebar buttons
+            const navDashboard = document.getElementById('nav-dashboard');
+            const navRecruitment = document.getElementById('nav-recruitment');
+            const dashboardTitle = document.getElementById('dashboard-title');
+
+            if (role === 'candidate') {
+                navDashboard.innerText = 'Dashboard';
+                navRecruitment.innerText = 'Upload Resume';
+                dashboardTitle.innerText = 'Candidate Dashboard';
+            } else {
+                navDashboard.innerText = 'Dashboard';
+                navRecruitment.innerText = 'Resume Search';
+                dashboardTitle.innerText = 'Official Dashboard';
+                getResumeCount();
+                loadOfficialResumes();
+                loadOfficialEmails();
+            }
+
+            showPage('home');
+        }
 
         /* PAGE NAVIGATION */
 
@@ -859,87 +1319,85 @@
 
         }
 
-        /* TOGGLE UPLOAD METHOD */
-        function toggleUploadMethod() {
-            let method = document.querySelector('input[name="uploadMethod"]:checked').value;
-            if (method === 'url') {
-                document.getElementById('urlInputGroup').style.display = 'block';
-                document.getElementById('fileInputGroup').style.display = 'none';
+        /* UPLOAD RESUME */
+
+        function toggleUploadMethod(method) {
+            const fileGroup = document.getElementById('fileInputGroup');
+            const urlGroup = document.getElementById('urlInputGroup');
+            if (method === 'file') {
+                fileGroup.style.display = 'block';
+                urlGroup.style.display = 'none';
             } else {
-                document.getElementById('urlInputGroup').style.display = 'none';
-                document.getElementById('fileInputGroup').style.display = 'block';
+                fileGroup.style.display = 'none';
+                urlGroup.style.display = 'block';
             }
         }
-
-        /* UPLOAD RESUME */
 
         async function uploadResume() {
 
             let name = document.getElementById("candidateName").value;
-            let method = document.querySelector('input[name="uploadMethod"]:checked').value;
+            if (!name) {
+                alert("Please enter the candidate name.");
+                return;
+            }
+
+            const method = document.querySelector('input[name="uploadMethod"]:checked').value;
+            let formData = new FormData();
+            formData.append("name", name);
+
+            if (method === 'file') {
+                let resumeFile = document.getElementById("resumeFile").files[0];
+                if (!resumeFile) {
+                    alert("Please select a PDF file.");
+                    return;
+                }
+                formData.append("file", resumeFile);
+            } else {
+                let resumeUrl = document.getElementById("resumeUrl").value.trim();
+                if (!resumeUrl) {
+                    alert("Please enter a PDF URL.");
+                    return;
+                }
+                if (!resumeUrl.startsWith("http://") && !resumeUrl.startsWith("https://")) {
+                    alert("Invalid URL. Must start with http:// or https://");
+                    return;
+                }
+                formData.append("resume_url", resumeUrl);
+            }
 
             try {
-                let formData = new FormData();
-                formData.append("name", name);
-
-                if (method === 'url') {
-                    let resumeURL = document.getElementById("resumeURL").value;
-                    if (!resumeURL) {
-                        alert("Please enter a PDF URL.");
-                        return;
-                    }
-                    formData.append("resume_url", resumeURL);
-                } else {
-                    let resumeFile = document.getElementById("resumeFile").files[0];
-                    if (!resumeFile) {
-                        alert("Please select a PDF file.");
-                        return;
-                    }
-                    formData.append("file", resumeFile);
-                }
-
                 let response = await fetch(
-
                     "http://127.0.0.1:8000/insert_resume",
-
                     {
                         method: "POST",
                         body: formData
                     }
-
                 );
 
                 let data = await response.json();
-                console.log('Search results:', data);
+                console.log('Upload result:', data);
 
                 if (data.message) {
-
-                    document.getElementById(
-                        "successMessage"
-                    ).style.display = "block";
-
+                    document.getElementById("successMessage").style.display = "block";
                     alert(
                         "Resume uploaded successfully!\n\nExtracted Skills:\n\n"
                         + data.skills
                     );
                     getResumeCount();
-
-                }
-
-                else {
-
+                    // Clear inputs
+                    document.getElementById("candidateName").value = "";
+                    document.getElementById("resumeFile").value = "";
+                    document.getElementById("resumeUrl").value = "";
+                    setTimeout(() => {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 5000);
+                } else {
                     alert(data.error);
-
                 }
 
-            }
-
-            catch (error) {
-
+            } catch (error) {
                 console.log(error);
-
                 alert("Backend connection failed");
-
             }
 
         }
@@ -989,7 +1447,7 @@ Search Results
 <tr>
 
 <th>Name</th>
-<th>Resume URL</th>
+<th>Resume</th>
 <th>Score</th>
 
 </tr>
@@ -1004,27 +1462,19 @@ Search Results
 
                     let resumeDisplay = "";
 
-                    // IF RESUME IS URL
-                    if (
-                        item.resume_url.startsWith("http://") ||
-                        item.resume_url.startsWith("https://")
-                    ) {
-
+                    if (item.resume_url) {
+                        let linkUrl = item.resume_url;
+                        if (!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://")) {
+                            linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
+                        }
+                        const encodedLinkUrl = encodeURI(linkUrl);
                         resumeDisplay = `
-        <a href="${item.resume_url}" target="_blank">
-            View Resume
-        </a>
-        `;
-                    }
-
-                    // IF RESUME IS UPLOADED FILE
-                    else {
-
-                        resumeDisplay = `
-        <span class="text-info">
-            ${item.resume_url}
-        </span>
-        `;
+                        <a href="${encodedLinkUrl}" target="_blank" class="btn btn-sm btn-outline-info">
+                            View Resume
+                        </a>
+                        `;
+                    } else {
+                        resumeDisplay = `<span class="text-muted">No resume link</span>`;
                     }
 
                     html += `
@@ -1062,9 +1512,14 @@ Search Results
         }
 
         window.onload = function () {
-
-            getResumeCount();
-
+            const savedUser = localStorage.getItem('resumeUser');
+            if (savedUser) {
+                const userObj = JSON.parse(savedUser);
+                applyUserRole(userObj.role, userObj.name);
+            } else {
+                document.body.classList.add('logged-out');
+                setLoginRole('candidate');
+            }
         }
 
         /* AI ASSISTANT */
@@ -1123,6 +1578,365 @@ Search Results
 
             }
 
+        }
+
+        /* NEW HELPER FUNCTIONS */
+
+        function toggleAuthForm(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginToggleArea = document.getElementById('loginToggleArea');
+            const registerToggleArea = document.getElementById('registerToggleArea');
+            const tabContainer = document.querySelector('.d-flex.mb-4');
+            const demoCredentials = document.getElementById('demo-credentials').parentElement;
+
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('registerError').style.display = 'none';
+            document.getElementById('registerSuccess').style.display = 'none';
+
+            if (mode === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                loginToggleArea.style.display = 'none';
+                registerToggleArea.style.display = 'block';
+                tabContainer.style.display = 'none';
+                demoCredentials.style.display = 'none';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                loginToggleArea.style.display = 'block';
+                registerToggleArea.style.display = 'none';
+                tabContainer.style.display = 'flex';
+                demoCredentials.style.display = 'block';
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name, username, password, role })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    successDiv.innerText = "Registration successful! Switching to login...";
+                    successDiv.style.display = 'block';
+
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerPassword').value = '';
+
+                    setTimeout(() => {
+                        toggleAuthForm('login');
+                        document.getElementById('loginUsername').value = username;
+                        document.getElementById('loginPassword').value = '';
+                    }, 1500);
+                } else {
+                    errorDiv.innerText = data.message;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Registration failed", error);
+                errorDiv.innerText = "Connection to server failed.";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function sendHREmail(event) {
+            event.preventDefault();
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+
+            const savedUser = localStorage.getItem('resumeUser');
+            let senderName = "Anonymous Candidate";
+            let senderEmail = "candidate@idealtechlabs.com";
+            if (savedUser) {
+                const userObj = JSON.parse(savedUser);
+                senderName = userObj.name || userObj.username;
+                senderEmail = `${userObj.username}@idealtechlabs.com`;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/send_email", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sender_name: senderName,
+                        sender_email: senderEmail,
+                        subject: subject,
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert("Message sent to HR successfully!");
+                    document.getElementById('emailSubject').value = '';
+                    document.getElementById('emailMessage').value = '';
+                } else {
+                    alert("Failed to send message: " + data.message);
+                }
+            } catch (err) {
+                console.error("Send email failed", err);
+                alert("Failed to connect to server to send message.");
+            }
+        }
+
+        async function loadOfficialResumes() {
+            const listDiv = document.getElementById('resumesReceivedList');
+            if (!listDiv) return;
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/resumes");
+                const data = await response.json();
+                if (data.success) {
+                    if (data.resumes.length === 0) {
+                        listDiv.innerHTML = '<p class="text-muted">No resumes received yet.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mt-2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Skills</th>
+                                        <th>Resume Link</th>
+                                        <th style="width: 100px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    // print("Loading resumes...");
+
+                    data.resumes.forEach(resume => {
+                        let encodedLinkUrl, linkHtml = '';
+                        if (resume.resume_url) {
+                            let linkUrl = resume.resume_url;
+                            if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
+                                linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
+                            }
+                            encodedLinkUrl = encodeURI(linkUrl);
+                            linkHtml = `<a href="${encodedLinkUrl}" target="_blank" class="btn btn-sm btn-outline-info">View PDF</a>`;
+                        } else {
+                            linkHtml = `<span class="text-muted">No link available</span>`;
+                        }
+                        // print("Resume loaded: " + resume.name);
+
+                        html += `
+                            <tr>
+                                <td class="fw-bold">${resume.name}</td>
+                                <td><span style="font-size: 13px; color: white;">${resume.skills || 'None'}</span></td>
+                                <td>
+                                    ${linkHtml}
+
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteResume('${resume.id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    // print("All resumes loaded, rendering table...");
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                }
+            } catch (err) {
+                console.error("Failed to load resumes", err);
+                listDiv.innerHTML = '<p class="text-danger">Failed to load resumes from server.</p>';
+            }
+        }
+
+        async function deleteResume(id) {
+            if (!confirm("Are you sure you want to delete this resume? This will also remove it from search index.")) return;
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/resumes/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("Resume deleted successfully.");
+                    getResumeCount();
+                    loadOfficialResumes();
+                } else {
+                    alert("Error deleting resume: " + data.error);
+                }
+            } catch (err) {
+                console.error("Delete failed", err);
+                alert("Failed to connect to backend to delete resume.");
+            }
+        }
+
+        async function loadOfficialEmails() {
+            const listDiv = document.getElementById('emailsReceivedList');
+            if (!listDiv) return;
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/emails");
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    if (data.length === 0) {
+                        listDiv.innerHTML = '<p class="text-muted">No emails received yet.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mt-2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Sender</th>
+                                        <th>Subject</th>
+                                        <th>Message</th>
+                                        <th style="width: 100px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.forEach(email => {
+                        html += `
+                            <tr>
+                                <td style="font-size: 13px; color: #a0aec0; min-width: 140px;">${email.timestamp || ''}</td>
+                                <td>
+                                    <div class="fw-bold">${email.sender_name}</div>
+                                    <div style="font-size: 12px; color: #bfc7d9;">${email.sender_email}</div>
+                                </td>
+                                <td class="fw-semibold">${email.subject}</td>
+                                <td style="white-space: pre-wrap; font-size: 13px;">${email.message}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteEmail('${email.id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = `<p class="text-danger">Failed to load emails.</p>`;
+                }
+            } catch (err) {
+                console.error("Failed to load emails", err);
+                listDiv.innerHTML = '<p class="text-danger">Failed to load emails from server.</p>';
+            }
+        }
+
+        async function deleteEmail(id) {
+            if (!confirm("Are you sure you want to delete this email?")) return;
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/emails/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("Email deleted successfully.");
+                    loadOfficialEmails();
+                } else {
+                    alert("Error deleting email: " + data.message);
+                }
+            } catch (err) {
+                console.error("Delete failed", err);
+                alert("Failed to connect to backend to delete email.");
+            }
+        }
+
+        /* FLOATING CHATBOT FUNCTIONS */
+
+        function toggleChatbot() {
+            const chatWindow = document.getElementById('chatbotWindow');
+            const toggleBtn = document.getElementById('chatbotToggleBtn');
+            if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                chatWindow.style.display = 'flex';
+                toggleBtn.style.transform = 'scale(0.9) rotate(90deg)';
+                setTimeout(() => document.getElementById('chatbotInput').focus(), 100);
+            } else {
+                chatWindow.style.display = 'none';
+                toggleBtn.style.transform = 'scale(1) rotate(0deg)';
+            }
+        }
+
+        async function sendChatbotMessage() {
+            const input = document.getElementById('chatbotInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+
+            const chatBody = document.getElementById('chatbotBody');
+
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.style.cssText = "background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-end; color: white; box-shadow: 0 4px 12px rgba(0, 114, 255, 0.2);";
+            userMsgDiv.innerText = message;
+            chatBody.appendChild(userMsgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chat-msg-ai';
+            loadingDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;";
+            loadingDiv.innerText = "Thinking...";
+            chatBody.appendChild(loadingDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/ask_ai", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: message })
+                });
+
+                const data = await response.json();
+
+                chatBody.removeChild(loadingDiv);
+
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'chat-msg-ai';
+                responseDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; white-space: pre-wrap;";
+                responseDiv.innerText = data.answer || "No response received.";
+                chatBody.appendChild(responseDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            } catch (error) {
+                console.error("Chat failed", error);
+                chatBody.removeChild(loadingDiv);
+
+                const responseDiv = document.createElement('div');
+                responseDiv.style.cssText = "background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.2); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; color: #ff6b6b;";
+                responseDiv.innerText = "Failed to connect to AI server.";
+                chatBody.appendChild(responseDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
         }
 
     </script>
