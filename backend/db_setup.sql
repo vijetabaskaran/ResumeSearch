@@ -24,3 +24,12 @@ VALUES
 ('candidate', 'password', 'candidate', 'Candidate User'),
 ('official', 'password', 'official', 'Official Admin')
 ON CONFLICT (username) DO NOTHING;
+
+-- Create Job Descriptions Table
+CREATE TABLE IF NOT EXISTS job_descriptions (
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    department VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    created_at VARCHAR(50) NOT NULL
+);

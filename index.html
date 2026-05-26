@@ -838,6 +838,71 @@
                             </div>
                         </div>
 
+                        <!-- Create Job Description (Official only) -->
+                        <div class="glass-card mt-4 role-official">
+                            <h4>Create Job Description Document</h4>
+                            <form id="jdForm" class="mt-3" onsubmit="createJobDescription(event)">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-light">Job Title</label>
+                                        <input type="text" id="jdTitle" class="form-control" placeholder="e.g. Senior Python Developer" required />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-light">Department</label>
+                                        <input type="text" id="jdDepartment" class="form-control" placeholder="e.g. Engineering" required />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-light d-block">Creation Method</label>
+                                    <div class="d-flex gap-4 mt-2 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="jdMethod" id="jdMethodText" value="text" checked onchange="toggleJDMethod('text')">
+                                            <label class="form-check-label" for="jdMethodText" style="cursor: pointer; color: #bfc7d9;">
+                                                Manual Text Input
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="jdMethod" id="jdMethodFile" value="file" onchange="toggleJDMethod('file')">
+                                            <label class="form-check-label" for="jdMethodFile" style="cursor: pointer; color: #bfc7d9;">
+                                                File Upload (PDF/TXT)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="jdTextGroup">
+                                    <label class="form-label text-light">Job Description</label>
+                                    <textarea id="jdDescription" class="form-control" rows="4" placeholder="Describe the role requirements, skills, and qualifications..." required></textarea>
+                                </div>
+                                <div class="mb-3" id="jdFileGroup" style="display: none;">
+                                    <label class="form-label text-light">Upload Job Description File</label>
+                                    <input type="file" id="jdFile" class="form-control" accept=".pdf,.txt" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Job Description</button>
+                            </form>
+                        </div>
+
+                        <!-- Job Descriptions List (Official only) -->
+                        <div class="glass-card mt-4 role-official">
+                            <h4>Active Job Descriptions</h4>
+                            <div id="jdsList" class="mt-3">
+                                <p class="text-muted">Loading job descriptions...</p>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Matching Results Sub-panel (Official only, shown on request) -->
+                        <div id="jdMatchPanel" class="glass-card mt-4 role-official" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="m-0" id="jdMatchTitle">Candidate Matches</h4>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-success me-2" onclick="exportJDMatches()">Export Match Results</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="closeJDMatches()">Close</button>
+                                </div>
+                            </div>
+                            <div id="jdMatchResults" class="mt-3">
+                                <p class="text-muted">Calculating matches...</p>
+                            </div>
+                        </div>
+
                         <!-- Available Roles (Candidate only) -->
                         <div class="glass-card mt-4 role-candidate">
 
@@ -845,57 +910,9 @@
                                 Available Roles
                             </h4>
 
-                            <table class="table table-bordered mt-4">
-
-                                <thead class="table-dark">
-
-                                    <tr>
-
-                                        <th>Role</th>
-                                        <th>Experience</th>
-                                        <th>Location</th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody>
-
-                                    <tr>
-
-                                        <td>Python Developer</td>
-                                        <td>2+ Years</td>
-                                        <td>Chennai</td>
-
-                                    </tr>
-
-                                    <tr>
-
-                                        <td>Machine Learning Engineer</td>
-                                        <td>1+ Years</td>
-                                        <td>Bangalore</td>
-
-                                    </tr>
-
-                                    <tr>
-
-                                        <td>Frontend Developer</td>
-                                        <td>Fresher</td>
-                                        <td>Remote</td>
-
-                                    </tr>
-
-                                    <tr>
-
-                                        <td>Cloud Engineer</td>
-                                        <td>2+ Years</td>
-                                        <td>Hyderabad</td>
-
-                                    </tr>
-
-                                </tbody>
-
-                            </table>
+                            <div id="candidateJdList" class="mt-3">
+                                <p class="text-muted">Loading available roles...</p>
+                            </div>
 
                         </div>
 
@@ -961,10 +978,6 @@
                                 <button type="button" class="btn btn-primary" onclick="uploadResume()">
                                     Upload Resume
                                 </button>
-
-                                <label class="text-success mt-3 d-block" id="successMessage" style="display:none;">
-                                    Resume uploaded successfully!
-                                </label>
 
                             </form>
 
@@ -1244,6 +1257,7 @@
                 navDashboard.innerText = 'Dashboard';
                 navRecruitment.innerText = 'Upload Resume';
                 dashboardTitle.innerText = 'Candidate Dashboard';
+                loadCandidateJobDescriptions();
             } else {
                 navDashboard.innerText = 'Dashboard';
                 navRecruitment.innerText = 'Resume Search';
@@ -1251,6 +1265,7 @@
                 getResumeCount();
                 loadOfficialResumes();
                 loadOfficialEmails();
+                loadJobDescriptions();
             }
 
             showPage('home');
@@ -1402,6 +1417,7 @@
 
         }
         /* SEARCH SKILL */
+        let lastSearchResults = [];
 
         async function searchSkill() {
 
@@ -1432,13 +1448,16 @@
 
                 }
 
+                lastSearchResults = data.results;
+
                 let html = `
 
 <div class="glass-card">
 
-<h4>
-Search Results
-</h4>
+<div class="d-flex justify-content-between align-items-center">
+    <h4 class="m-0">Search Results</h4>
+    <button class="btn btn-sm btn-outline-success" onclick="exportSearchResults()">Export CSV</button>
+</div>
 
 <table class="table table-bordered mt-4">
 
@@ -1448,7 +1467,7 @@ Search Results
 
 <th>Name</th>
 <th>Resume</th>
-<th>Score</th>
+<th>Match Percentage</th>
 
 </tr>
 
@@ -1481,7 +1500,7 @@ Search Results
 <tr>
 <td>${item.name}</td>
 <td>${resumeDisplay}</td>
-<td>${item.score}</td>
+<td>${item.match_percentage}</td>
 </tr>
 `;
 
@@ -1509,6 +1528,30 @@ Search Results
 
             }
 
+        }
+
+        function exportSearchResults() {
+            if (!lastSearchResults || lastSearchResults.length === 0) {
+                alert("No search results to export.");
+                return;
+            }
+            let csv = "Name,Skills,Match Percentage,Resume URL\n";
+            lastSearchResults.forEach(item => {
+                let name = `"${(item.name || '').replace(/"/g, '""')}"`;
+                let skills = `"${(item.skills || '').replace(/"/g, '""')}"`;
+                let pct = `"${item.match_percentage || ''}"`;
+                let url = `"${(item.resume_url || '').replace(/"/g, '""')}"`;
+                csv += `${name},${skills},${pct},${url}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "resume_search_results.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         window.onload = function () {
@@ -1868,6 +1911,323 @@ Search Results
             } catch (err) {
                 console.error("Delete failed", err);
                 alert("Failed to connect to backend to delete email.");
+            }
+        }
+
+        /* JOB DESCRIPTION FUNCTIONS */
+        let currentJDMatches = [];
+        let currentJDTitle = "";
+
+        function toggleJDMethod(method) {
+            const textGroup = document.getElementById('jdTextGroup');
+            const fileGroup = document.getElementById('jdFileGroup');
+            const descriptionInput = document.getElementById('jdDescription');
+            const fileInput = document.getElementById('jdFile');
+            
+            if (method === 'text') {
+                textGroup.style.display = 'block';
+                fileGroup.style.display = 'none';
+                descriptionInput.setAttribute('required', 'true');
+                fileInput.removeAttribute('required');
+                fileInput.value = '';
+            } else {
+                textGroup.style.display = 'none';
+                fileGroup.style.display = 'block';
+                descriptionInput.removeAttribute('required');
+                descriptionInput.value = '';
+                fileInput.setAttribute('required', 'true');
+            }
+        }
+
+        async function createJobDescription(event) {
+            event.preventDefault();
+            const title = document.getElementById('jdTitle').value.trim();
+            const department = document.getElementById('jdDepartment').value.trim();
+            const method = document.querySelector('input[name="jdMethod"]:checked').value;
+
+            if (!title || !department) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("department", department);
+
+            if (method === 'text') {
+                const description = document.getElementById('jdDescription').value.trim();
+                if (!description) {
+                    alert("Please enter the job description text.");
+                    return;
+                }
+                formData.append("description", description);
+            } else {
+                const fileInput = document.getElementById('jdFile');
+                const file = fileInput.files[0];
+                if (!file) {
+                    alert("Please select a file to upload.");
+                    return;
+                }
+                formData.append("file", file);
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/job_descriptions", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("Job description created successfully!");
+                    document.getElementById('jdTitle').value = '';
+                    document.getElementById('jdDepartment').value = '';
+                    document.getElementById('jdDescription').value = '';
+                    document.getElementById('jdFile').value = '';
+                    
+                    // Reset to text input by default
+                    const textRadio = document.getElementById('jdMethodText');
+                    textRadio.checked = true;
+                    toggleJDMethod('text');
+
+                    loadJobDescriptions();
+                } else {
+                    alert("Failed to save job description: " + data.message);
+                }
+            } catch (err) {
+                console.error("Failed to create job description", err);
+                alert("Failed to connect to server to create job description.");
+            }
+        }
+
+        async function loadJobDescriptions() {
+            const listDiv = document.getElementById('jdsList');
+            if (!listDiv) return;
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/job_descriptions");
+                const data = await response.json();
+                if (data.success) {
+                    if (data.job_descriptions.length === 0) {
+                        listDiv.innerHTML = '<p class="text-muted">No job descriptions posted yet.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mt-2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Department</th>
+                                        <th>Description</th>
+                                        <th style="width: 250px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.job_descriptions.forEach(jd => {
+                        html += `
+                            <tr>
+                                <td class="fw-bold text-info">${jd.title}</td>
+                                <td class="fw-semibold">${jd.department}</td>
+                                <td style="white-space: pre-wrap; font-size: 13px;">${jd.description}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-success" onclick="matchJobDescription('${jd.id}', '${jd.title.replace(/'/g, "\\'")}')">Find Matches</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJobDescription('${jd.id}')">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                }
+            } catch (err) {
+                console.error("Failed to load job descriptions", err);
+                listDiv.innerHTML = '<p class="text-danger">Failed to load job descriptions from server.</p>';
+            }
+        }
+
+        async function deleteJobDescription(id) {
+            if (!confirm("Are you sure you want to delete this job description?")) return;
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/job_descriptions/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("Job description deleted successfully.");
+                    loadJobDescriptions();
+                    // Close matches if they were for this JD
+                    closeJDMatches();
+                } else {
+                    alert("Error deleting job description: " + data.message);
+                }
+            } catch (err) {
+                console.error("Delete job description failed", err);
+                alert("Failed to connect to backend to delete job description.");
+            }
+        }
+
+        async function matchJobDescription(id, title) {
+            const panel = document.getElementById('jdMatchPanel');
+            const resultsDiv = document.getElementById('jdMatchResults');
+            const titleElem = document.getElementById('jdMatchTitle');
+
+            currentJDTitle = title;
+            titleElem.innerText = `Candidate Matches for: ${title}`;
+            panel.style.display = 'block';
+            resultsDiv.innerHTML = '<p class="text-muted">Calculating matches...</p>';
+            
+            // Scroll to matching panel
+            panel.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/job_descriptions/${id}/match`);
+                const data = await response.json();
+                if (data.success) {
+                    currentJDMatches = data.results;
+                    if (data.results.length === 0) {
+                        resultsDiv.innerHTML = '<p class="text-muted">No candidate resumes found in the database to match.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mt-2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Extracted Skills</th>
+                                        <th>Match Percentage</th>
+                                        <th>Resume Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.results.forEach(candidate => {
+                        let linkHtml = '';
+                        if (candidate.resume_url) {
+                            let linkUrl = candidate.resume_url;
+                            if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
+                                linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
+                            }
+                            linkHtml = `<a href="${encodeURI(linkUrl)}" target="_blank" class="btn btn-sm btn-outline-info">View PDF</a>`;
+                        } else {
+                            linkHtml = `<span class="text-muted">No link</span>`;
+                        }
+
+                        html += `
+                            <tr>
+                                <td class="fw-bold">${candidate.name}</td>
+                                <td style="font-size: 13px; color: white;">${candidate.skills || 'None'}</td>
+                                <td class="fw-bold text-success">${candidate.match_percentage}</td>
+                                <td>${linkHtml}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `<p class="text-danger">Error finding matches: ${data.error}</p>`;
+                }
+            } catch (err) {
+                console.error("Match JD failed", err);
+                resultsDiv.innerHTML = '<p class="text-danger">Failed to retrieve matching candidates from server.</p>';
+            }
+        }
+
+        function closeJDMatches() {
+            document.getElementById('jdMatchPanel').style.display = 'none';
+            currentJDMatches = [];
+            currentJDTitle = "";
+        }
+
+        function exportJDMatches() {
+            if (!currentJDMatches || currentJDMatches.length === 0) {
+                alert("No match results to export.");
+                return;
+            }
+            let csv = "Candidate Name,Skills,Match Percentage,Resume URL\n";
+            currentJDMatches.forEach(item => {
+                let name = `"${(item.name || '').replace(/"/g, '""')}"`;
+                let skills = `"${(item.skills || '').replace(/"/g, '""')}"`;
+                let pct = `"${item.match_percentage || ''}"`;
+                let url = `"${(item.resume_url || '').replace(/"/g, '""')}"`;
+                csv += `${name},${skills},${pct},${url}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `candidate_matches_${currentJDTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function loadCandidateJobDescriptions() {
+            const listDiv = document.getElementById('candidateJdList');
+            if (!listDiv) return;
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/job_descriptions");
+                const data = await response.json();
+                if (data.success) {
+                    if (data.job_descriptions.length === 0) {
+                        listDiv.innerHTML = '<p class="text-muted">No open roles currently posted by recruiters.</p>';
+                        return;
+                    }
+
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mt-2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Department</th>
+                                        <th>Role Requirements / Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    data.job_descriptions.forEach(jd => {
+                        html += `
+                            <tr>
+                                <td class="fw-bold text-info">${jd.title}</td>
+                                <td class="fw-semibold">${jd.department}</td>
+                                <td style="white-space: pre-wrap; font-size: 13px;">${jd.description}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                }
+            } catch (err) {
+                console.error("Failed to load candidate job descriptions", err);
+                listDiv.innerHTML = '<p class="text-danger">Failed to load open roles from server.</p>';
             }
         }
 

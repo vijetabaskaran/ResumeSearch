@@ -205,3 +205,73 @@ def delete_message_by_id(message_id):
     finally:
         if conn:
             conn.close()
+
+# ==========================================
+# JOB DESCRIPTION HELPERS
+# ==========================================
+
+_FALLBACK_JD = []
+
+def save_job_description(jd_id, title, department, description, created_at):
+    """Insert a job description into the database."""
+    global _FALLBACK_JD
+    conn = None
+    new_jd = {"id": jd_id, "title": title, "department": department,
+               "description": description, "created_at": created_at}
+    try:
+        conn = get_connection()
+        if not conn:
+            _FALLBACK_JD.append(new_jd)
+            return True
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO job_descriptions (id, title, department, description, created_at) VALUES (%s, %s, %s, %s, %s)",
+                (jd_id, title, department, description, created_at)
+            )
+        return True
+    except Exception as e:
+        print(f"Error saving JD (using fallback): {e}")
+        _FALLBACK_JD.append(new_jd)
+        return True
+    finally:
+        if conn:
+            conn.close()
+
+def get_all_job_descriptions():
+    """Retrieve all job descriptions ordered by newest first."""
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            return list(reversed(_FALLBACK_JD))
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("SELECT * FROM job_descriptions ORDER BY created_at DESC")
+            return list(cursor.fetchall())
+    except Exception as e:
+        print(f"Error getting JDs (using fallback): {e}")
+        return list(reversed(_FALLBACK_JD))
+    finally:
+        if conn:
+            conn.close()
+
+def delete_job_description_by_id(jd_id):
+    """Delete a job description by id."""
+    global _FALLBACK_JD
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            _FALLBACK_JD = [j for j in _FALLBACK_JD if j["id"] != jd_id]
+            return True
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM job_descriptions WHERE id = %s", (jd_id,))
+        return True
+    except Exception as e:
+        print(f"Error deleting JD (using fallback): {e}")
+        _FALLBACK_JD = [j for j in _FALLBACK_JD if j["id"] != jd_id]
+        return True
+    finally:
+        if conn:
+            conn.close()

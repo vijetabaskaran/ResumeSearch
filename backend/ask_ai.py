@@ -39,6 +39,8 @@ async def ask_ai(data: AIRequest):
 
             model="llama-3.3-70b-versatile",
 
+            max_tokens=400,
+
             messages=[
 
                 {
@@ -71,6 +73,9 @@ Give professional and short responses.
 
         print("Response received from GROQ")
 
+        usage = response.usage
+        print(f"Token Usage - Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens}, Total: {usage.total_tokens}")
+
         answer = response.choices[0].message.content
 
         print("\nAI ANSWER:")
@@ -80,7 +85,12 @@ Give professional and short responses.
 
         return {
 
-            "answer": answer
+            "answer": answer,
+            "token_usage": {
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "total_tokens": usage.total_tokens
+            }
 
         }
 

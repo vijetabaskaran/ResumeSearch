@@ -108,7 +108,8 @@ async def insert_resume(
         # AI SKILL EXTRACTION
         # ==========================================
 
-        print("\nSending Resume to GROQ AI For Skill Extraction...")
+        # Optimize prompt token usage by truncating extremely long resumes
+        optimized_pdf_text = pdf_text[:12000]
 
         prompt = f"""
 
@@ -128,13 +129,15 @@ Python, FastAPI, SQL, Communication, Leadership
 
 Resume:
 
-{pdf_text}
+{optimized_pdf_text}
 
 """
 
         response = groq_client.chat.completions.create(
 
             model="llama-3.3-70b-versatile",
+
+            max_tokens=250,
 
             messages=[
 
@@ -148,6 +151,9 @@ Resume:
         )
 
         print("Skills Extracted Successfully")
+
+        usage = response.usage
+        print(f"Token Usage - Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens}, Total: {usage.total_tokens}")
 
         extracted_skills = response.choices[0].message.content
 
@@ -239,7 +245,12 @@ Resume:
 
             "message": "Resume inserted successfully",
 
-            "skills": extracted_skills
+            "skills": extracted_skills,
+            "token_usage": {
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "total_tokens": usage.total_tokens
+            }
 
         }
 

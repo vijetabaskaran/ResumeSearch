@@ -90,6 +90,9 @@ def analyze_resume(skill: str):
         # CREATE PROMPT
         # ==========================================
 
+        # Optimize prompt token usage by truncating extremely long resumes
+        optimized_resume_text = resume_text[:12000]
+
         prompt = f"""
 
 Analyze this resume.
@@ -98,7 +101,7 @@ Candidate Name:
 {candidate_name}
 
 Resume:
-{resume_text}
+{optimized_resume_text}
 
 Give:
 1. Candidate Summary
@@ -121,6 +124,8 @@ Give:
 
             model="llama-3.3-70b-versatile",
 
+            max_tokens=800,
+
             messages=[
 
                 {
@@ -134,6 +139,9 @@ Give:
 
         print("Response Received From GROQ")
 
+        usage = response.usage
+        print(f"Token Usage - Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens}, Total: {usage.total_tokens}")
+
         analysis = response.choices[0].message.content
 
         print("\nAI ANALYSIS:")
@@ -145,7 +153,12 @@ Give:
 
             "candidate_name": candidate_name,
 
-            "analysis": analysis
+            "analysis": analysis,
+            "token_usage": {
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "total_tokens": usage.total_tokens
+            }
 
         }
 

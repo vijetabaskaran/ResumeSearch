@@ -78,8 +78,8 @@ def search_resume(skill: str):
             # EXACT SKILL + THRESHOLD FILTER
             # ==========================================
 
-            if searched_skill in stored_skills and score >= 0.25:
-
+            if searched_skill in stored_skills and score >= 0.5:
+                match_percentage = max(0.0, min(100.0, round(score * 100, 1)))
                 matched_resumes.append({
 
                     "name": point.payload.get("name"),
@@ -87,6 +87,8 @@ def search_resume(skill: str):
                     "resume_url": point.payload.get("resume_url"),
 
                     "skills": point.payload.get("skills"),
+
+                    "match_percentage": f"{match_percentage}%",
 
                     "score": round(score, 4)
 
