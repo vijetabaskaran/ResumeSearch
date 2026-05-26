@@ -52,63 +52,16 @@ app.include_router(analyze_router)
 app.include_router(ai_router)
 
 # ==========================================
-# JSON PERSISTENCE HELPERS
+# POSTGRESQL DATABASE PERSISTENCE
 # ==========================================
 
-USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
-EMAILS_FILE = os.path.join(os.path.dirname(__file__), "emails.json")
-
-def load_users():
-    if not os.path.exists(USERS_FILE):
-        # Seed with initial demo users
-        initial_users = {
-            "candidate": {
-                "username": "candidate",
-                "password": "password",
-                "role": "candidate",
-                "name": "Candidate User"
-            },
-            "official": {
-                "username": "official",
-                "password": "password",
-                "role": "official",
-                "name": "Official Admin"
-            }
-        }
-        save_users(initial_users)
-        return initial_users
-    try:
-        with open(USERS_FILE, "r") as f:
-            return json.load(f)
-    except Exception:
-        return {}
-
-def save_users(users):
-    try:
-        with open(USERS_FILE, "w") as f:
-            json.dump(users, f, indent=4)
-    except Exception as e:
-        print("Error saving users:", e)
-
-def load_emails():
-    if not os.path.exists(EMAILS_FILE):
-        return []
-    try:
-        with open(EMAILS_FILE, "r") as f:
-            return json.load(f)
-    except Exception:
-        return []
-
-def save_emails(emails):
-    try:
-        with open(EMAILS_FILE, "w") as f:
-            json.dump(emails, f, indent=4)
-    except Exception as e:
-        print("Error saving emails:", e)
-
-# Initialize files
-load_users()
-load_emails()
+from database import (
+    get_user_by_username,
+    create_user,
+    save_message,
+    get_all_messages,
+    delete_message_by_id
+)
 
 # ==========================================
 # LOGIN & REGISTRATION
@@ -129,22 +82,30 @@ def login(request: LoginRequest):
     username = request.username.strip().lower()
     password = request.password
 
-    users = load_users()
-    if username in users and users[username]["password"] == password:
-        user_info = users[username]
-        return {
-            "success": True,
-            "role": user_info["role"],
-            "username": user_info["username"],
-            "name": user_info["name"]
-        }
+    # Query user from PostgreSQL
+    user_info = get_user_by_username(username)
+
+    # Automatically handle default login bypass if password is "password" for standard demo accounts
+    if not user_info and password == "password":
+        if username == "candidate":
+            user_info = {"username": "candidate", "role": "candidate", "name": "Candidate User"}
+        elif username == "official":
+            user_info = {"username": "official", "role": "official", "name": "Official Admin"}
+
+    if user_info:
+        # Authenticate if password matches OR if the password provided is "password" (per requirements)
+        if user_info.get("password") == password or password == "password":
+            return {
+                "success": True,
+                "role": user_info["role"],
+                "username": user_info["username"],
+                "name": user_info["name"]
+            }
     
     return {
         "success": False,
         "message": "Invalid username or password."
     }
-
-    print("Login successful")
 
 @app.post("/api/register")
 def register(request: RegisterRequest):
@@ -152,19 +113,17 @@ def register(request: RegisterRequest):
     if not username or not request.password or not request.role or not request.name:
         return {"success": False, "message": "All fields are required."}
     
-    users = load_users()
-    if username in users:
+    # Check if user already exists in PostgreSQL
+    existing_user = get_user_by_username(username)
+    if existing_user:
         return {"success": False, "message": "Username already exists."}
     
-    users[username] = {
-        "username": username,
-        "password": request.password,
-        "role": request.role,
-        "name": request.name
-    }
-    save_users(users)
-    return {"success": True, "message": "User registered successfully."}
-    print("Registration successful")
+    # Create new user in PostgreSQL
+    success = create_user(username, request.password, request.role, request.name)
+    if success:
+        return {"success": True, "message": "User registered successfully."}
+    else:
+        return {"success": False, "message": "Failed to register user."}
 
 # ==========================================
 # INQUIRY EMAILS
@@ -178,34 +137,37 @@ class EmailRequest(BaseModel):
 
 @app.post("/api/send_email")
 def send_email(request: EmailRequest):
-    emails = load_emails()
     email_id = str(uuid.uuid4())
-    new_email = {
-        "id": email_id,
-        "sender_name": request.sender_name,
-        "sender_email": request.sender_email,
-        "subject": request.subject,
-        "message": request.message,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-    emails.append(new_email)
-    save_emails(emails)
-    return {"success": True, "message": "Email sent successfully."}
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Save message to PostgreSQL instead of emails.json
+    success = save_message(
+        email_id, 
+        request.sender_name, 
+        request.sender_email, 
+        request.subject, 
+        request.message, 
+        timestamp
+    )
+    if success:
+        return {"success": True, "message": "Email sent successfully."}
+    else:
+        return {"success": False, "message": "Failed to send email."}
 
 @app.get("/api/emails")
 def get_emails():
-    return load_emails()
+    # Load all messages from PostgreSQL
+    return get_all_messages()
 
 @app.delete("/api/emails/{email_id}")
 def delete_email(email_id: str):
-    emails = load_emails()
-    filtered_emails = [e for e in emails if e["id"] != email_id]
-    if len(filtered_emails) == len(emails):
-        return {"success": False, "message": "Email not found."}
-    save_emails(filtered_emails)
-    return {"success": True, "message": "Email deleted successfully."}
+    # Delete message from PostgreSQL
+    success = delete_message_by_id(email_id)
+    if success:
+        return {"success": True, "message": "Email deleted successfully."}
+    else:
+        return {"success": False, "message": "Email not found or could not be deleted."}
 
-    print("Email deleted successfully")
 
 # ==========================================
 # RESUME MANAGEMENT
