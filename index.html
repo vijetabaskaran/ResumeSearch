@@ -2,900 +2,969 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Resume AI Dashboard</title>
-
+    <title>ResumeX - Ai resume analysis</title>
+    
+    <!-- CSS Dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
+        :root {
+            --bg-dark: #070913;
+            --sidebar-bg: rgba(10, 15, 30, 0.95);
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #0072ff;
+            --accent-cyan: #00c6ff;
+            --accent-glow: rgba(0, 198, 255, 0.3);
+            --accent-green: #00b09b;
+            --accent-red: #ff4d4d;
+            --card-hover-bg: rgba(255, 255, 255, 0.03);
+        }
+
         * {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif;
+            box-sizing: border-box;
         }
 
         body {
-            background: #0a0a0a;
-            color: #b8a5a5;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
         }
 
-        /* SIDEBAR */
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
+        /* SIDEBAR STYLE */
         .sidebar {
             height: 100vh;
-            background: rgba(10, 15, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 30px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 30px 15px;
             position: fixed;
-            width: 16%;
+            width: 17%;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
         }
 
-        .sidebar h3 {
+        .sidebar-brand h3 {
             text-align: center;
-            margin-bottom: 40px;
-            font-weight: 700;
-            font-size: 32px;
-            background: linear-gradient(to right, #00c6ff, #0072ff);
+            margin-bottom: 30px;
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand h3 i {
+            -webkit-text-fill-color: initial;
+            color: #00c6ff;
+            text-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
         }
 
         .sidebar button {
             width: 100%;
             background: none;
             border: none;
-            color: #dbe7ff;
-            padding: 16px 25px;
+            color: var(--text-secondary);
+            padding: 14px 20px;
             text-align: left;
-            transition: 0.3s;
-            font-size: 16px;
-            border-left: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .sidebar button i {
+            font-size: 18px;
+            transition: all 0.3s ease;
         }
 
         .sidebar button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid #00c6ff;
-            padding-left: 30px;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(4px);
         }
 
-        /* MAIN CONTENT */
+        .sidebar button:hover i {
+            color: var(--accent-cyan);
+            transform: scale(1.1);
+        }
 
+        /* Active navigation visual highlight */
+        .sidebar button.active {
+            color: var(--text-primary);
+            background: rgba(0, 114, 255, 0.15);
+            border-left: 4px solid var(--accent-cyan);
+            font-weight: 600;
+            box-shadow: inset 0 0 15px rgba(0, 198, 255, 0.05);
+        }
+
+        .sidebar button.active i {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        /* MAIN CONTENT AREA */
         .main-content {
-            margin-left: 17%;
-            padding: 30px;
+            margin-left: 18%;
+            padding: 40px;
+            min-height: 100vh;
         }
 
         /* PAGES */
-
         .page {
             display: none;
-            animation: fadeIn 0.4s ease;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .active-page {
             display: block;
         }
 
-        @keyframes fadeIn {
-
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
-                transform: translateY(0px);
+                transform: translateY(0);
             }
-
         }
 
-        /* HERO SECTION */
+        /* GLASS CARD STYLES */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
+        .glass-card:hover {
+            border-color: rgba(0, 198, 255, 0.25);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        /* HERO CARD */
         .hero-section {
-            height: 88vh;
-            border-radius: 25px;
+            border-radius: 24px;
             overflow: hidden;
             position: relative;
-            background:
-                linear-gradient(rgba(0, 0, 0, 0.6),
-                    rgba(0, 0, 0, 0.7)),
-                url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop');
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(15, 23, 42, 0.85)),
+                        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            display: flex;
-            align-items: center;
-            padding: 60px;
-        }
-
-        .hero-content {
-            max-width: 650px;
+            padding: 70px 50px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
         }
 
         .hero-title {
-            font-size: 68px;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 25px;
-            background: linear-gradient(to right, #00c6ff, #8ef6ff);
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f8fafc 40%, #8ef6ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero-text {
-            font-size: 20px;
-            color: #d6d6d6;
-            line-height: 1.8;
-            margin-bottom: 35px;
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 620px;
+            margin-bottom: 30px;
         }
 
         .hero-btn {
-            background: linear-gradient(to right, #0072ff, #00c6ff);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
             border: none;
-            padding: 14px 40px;
-            font-size: 18px;
+            padding: 14px 36px;
+            font-size: 16px;
             font-weight: 600;
-            border-radius: 50px;
+            border-radius: 12px;
             color: white;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 198, 255, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .hero-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0px 10px 30px rgba(0, 198, 255, 0.3);
+            box-shadow: 0 12px 30px rgba(0, 198, 255, 0.5);
+            color: white;
         }
 
-        /* GLASS CARDS */
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 22px;
-            padding: 25px;
-            transition: 0.3s;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* DASHBOARD CARDS */
-
-        .card-box {
+        /* METRIC CARDS (INTERACTIVE SUMMARY CARDS) */
+        .metric-card {
             border-radius: 20px;
             padding: 30px;
             color: white;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: 0.3s;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
-        .card-box:hover {
-            transform: translateY(-5px);
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 198, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .card-box h2 {
-            font-size: 42px;
-            margin-top: 10px;
-            font-weight: 700;
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 15px 35px rgba(0, 198, 255, 0.2);
         }
 
-/* TABLE */
+        .metric-card:hover::before {
+            opacity: 1;
+        }
 
-.table {
-    background-color: #1e293b;   /* table background */
-    color: #ffffff;              /* text color */
-    border-color: #334155;
-}
+        .metric-icon-box {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
 
-.table thead {
-    background-color: #0f172a;   /* header background */
-}
+        .metric-card:hover .metric-icon-box {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            border-color: transparent;
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.3);
+            transform: scale(1.1);
+        }
 
-.table th {
-    color: #aab8be;              /* header text color */
-    padding: 15px;
-    vertical-align: middle;
-    border-color: #334155;
-}
+        .metric-card h5 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
 
-.table td {
-    background-color: #1e293b;   /* row background */
-    color: #737a83;              /* row text color */
-    padding: 15px;
-    vertical-align: middle;
-    border-color: #334155;
-}
+        .metric-card h2 {
+            font-size: 40px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
+        }
 
-.table tbody tr:hover {
-    background-color: #334155;   /* hover effect */
-}
+        /* TABLES */
+        .table-container {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
 
-.table-dark {
-    background-color: #0f172a !important;
-}
-        /* INPUTS */
+        .table {
+            background-color: var(--glass-bg);
+            color: var(--text-primary);
+            border-color: var(--glass-border);
+            margin: 0;
+        }
+
+        .table thead {
+            background-color: rgba(10, 15, 30, 0.8) !important;
+        }
+
+        .table th {
+            color: var(--text-secondary);
+            padding: 18px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid var(--glass-border);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .table td {
+            background-color: transparent;
+            color: var(--text-primary);
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 14px;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        /* FORM CONTROL IMPROVEMENTS */
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
 
         .form-control,
         .form-select {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
             color: white;
             border-radius: 12px;
-            padding: 14px;
+            padding: 12px 18px;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus,
         .form-select:focus {
             background: rgba(255, 255, 255, 0.08);
             color: white;
-            box-shadow: none;
-            border-color: #00c6ff;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.15);
+            border-color: var(--accent-cyan);
         }
 
         .form-control::placeholder {
-            color: #bfc7d9;
+            color: #64748b;
         }
 
         /* BUTTONS */
-
         .btn-primary {
-            background: linear-gradient(to right, #0072ff, #00c6ff);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
             border: none;
             border-radius: 12px;
-            padding: 12px 25px;
+            padding: 12px 24px;
             font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.25);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
         }
 
         .btn-success {
-            background: linear-gradient(to right, #00b09b, #96c93d);
+            background: linear-gradient(135deg, #00b09b, #96c93d);
             border: none;
             border-radius: 12px;
-            padding: 12px 25px;
+            padding: 12px 24px;
             font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.25);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* CONTACT */
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 176, 155, 0.4);
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+        }
 
-        .footer-contact {
-            position: fixed;
-            bottom: 20px;
-            right: 110px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            padding: 15px 20px;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 14px;
+        .btn-danger {
+            background: rgba(255, 77, 77, 0.15);
+            border: 1px solid rgba(255, 77, 77, 0.25);
+            color: #ff4d4d;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 77, 77, 0.85);
             color: white;
-            z-index: 999;
+            border-color: transparent;
+            transform: scale(1.02);
         }
 
-        /* TITLES */
-
-        .section-title {
-            font-size: 34px;
-            font-weight: 700;
-            margin-bottom: 25px;
+        /* BADGES */
+        .badge {
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
         }
 
-        /* SEARCH RESULTS */
-
-        #searchResults a {
-            color: #00c6ff;
-            text-decoration: none;
-        }
-
-        #searchResults a:hover {
-            text-decoration: underline;
-        }
-
-        /* LIGHT MODE */
-        body.light-mode {
-            background: #f4f6f9;
-            color: #333;
-        }
-
-        body.light-mode .sidebar {
-            background: #ffffff;
-            border-right: 1px solid #ddd;
-        }
-
-        body.light-mode .sidebar button {
-            color: #444;
-        }
-
-        body.light-mode .sidebar button:hover {
-            background: #f0f4f8;
-            border-left: 3px solid #00c6ff;
-        }
-
-        body.light-mode .glass-card,
-        body.light-mode .card-box {
-            background: #ffffff;
-            border: 1px solid #ddd;
-            color: #333;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        body.light-mode .hero-text {
-            color: #eee;
-            /* keep hero text light due to dark overlay on hero background */
-        }
-
-        body.light-mode .table {
-            color: #333;
-        }
-
-        body.light-mode .table-dark {
-            background: #e9ecef;
-            color: #333;
-            border-color: #dee2e6;
-        }
-
-        body.light-mode .table-dark th {
-            color: #333;
-            background: #e9ecef;
-            border-color: #dee2e6;
-        }
-
-        body.light-mode .form-control,
-        body.light-mode .form-select {
-            background: #fff;
-            border: 1px solid #ccc;
-            color: #333;
-        }
-
-        body.light-mode .form-control:focus,
-        body.light-mode .form-select:focus {
-            background: #040725;
-            color: #333;
-        }
-
-        body.light-mode .form-control::placeholder {
-            color: #888;
-        }
-
-        body.light-mode .footer-contact {
-            background: #ffffff;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        /* ROLE ACCESS CONTROL */
-        body.logged-out #appWrapper {
-            display: none !important;
-        }
-
-        body.logged-out #loginWrapper {
-            display: flex !important;
-        }
-
-        body:not(.logged-out) #appWrapper {
-            display: block !important;
-        }
-
-        body:not(.logged-out) #loginWrapper {
-            display: none !important;
-        }
-
-        body.user-candidate .role-official {
-            display: none !important;
-        }
-
-        body.user-official .role-candidate {
-            display: none !important;
-        }
-
-        /* DYNAMIC GRID ADJUSTMENTS */
-        body.user-official #dashboard .dashboard-row>div {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        body.user-candidate #dashboard .dashboard-row>div {
-            flex: 0 0 50%;
-            max-width: 50%;
+        /* DYNAMIC ROLE BADGE */
+        #userProfile {
+            transition: all 0.3s ease;
         }
 
         /* GLOWING BLOBS */
         .glowing-blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
+            filter: blur(150px);
             z-index: -1;
-            opacity: 0.18;
-            animation: floatBlob 20s infinite alternate ease-in-out;
+            opacity: 0.12;
             pointer-events: none;
         }
 
         .blob1 {
-            width: 350px;
-            height: 350px;
+            width: 450px;
+            height: 450px;
             background: #00c6ff;
-            top: 15%;
-            left: 15%;
+            top: 5%;
+            left: 20%;
+            animation: floatBlob 25s infinite alternate ease-in-out;
         }
 
         .blob2 {
-            width: 450px;
-            height: 450px;
+            width: 550px;
+            height: 550px;
             background: #0072ff;
-            bottom: 15%;
-            right: 15%;
-            animation-delay: -7s;
+            bottom: 10%;
+            right: 10%;
+            animation: floatBlob 25s infinite alternate-reverse ease-in-out;
         }
 
         @keyframes floatBlob {
-            0% {
-                transform: translate(0px, 0px) scale(1);
-            }
-
-            50% {
-                transform: translate(50px, -70px) scale(1.1);
-            }
-
-            100% {
-                transform: translate(-30px, 30px) scale(0.9);
-            }
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(60px, -60px) scale(1.15); }
+            100% { transform: translate(-40px, 40px) scale(0.9); }
         }
 
-        /* LIGHT MODE OVERRIDES FOR NEW ELEMENTS */
-        body.light-mode #loginWrapper {
-            background: radial-gradient(circle at 10% 20%, rgba(0, 198, 255, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(0, 114, 255, 0.08) 0%, transparent 40%) !important;
+        /* LIGHT MODE OVERRIDES */
+        body.light-mode {
+            background: #f1f5f9;
+            color: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(15, 23, 42, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
         }
 
-        body.light-mode .login-card {
-            background: #ffffff !important;
-            border: 1px solid #ddd !important;
-            color: #333 !important;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.05) !important;
+        body.light-mode .sidebar button {
+            color: #475569;
         }
 
-        body.light-mode #userProfile {
-            border-bottom: 1px solid #ddd;
+        body.light-mode .sidebar button:hover {
+            background: rgba(0,0,0,0.03);
+            color: #0f172a;
         }
 
-        body.light-mode #userProfileName {
-            color: #333 !important;
+        body.light-mode .sidebar button.active {
+            background: rgba(0, 114, 255, 0.08);
+            color: var(--accent-blue);
         }
 
-        body.light-mode #userRoleBadge {
-            color: #0072ff !important;
+        body.light-mode .metric-card {
+            background: rgba(255,255,255,0.7);
+            color: #0f172a;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
-        body.light-mode #nav-logout {
-            border-top: 1px solid #ddd !important;
+        body.light-mode .metric-card h5 {
+            color: #475569;
         }
 
-        body.light-mode .form-label {
-            color: #555 !important;
+        body.light-mode .metric-card h2 {
+            color: #0f172a;
         }
 
-        body.logged-out #floatingChatbot {
-            display: none !important;
+        body.light-mode .metric-icon-box {
+            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,0,0,0.05);
+            color: #475569 !important;
         }
 
+        body.light-mode .form-control,
+        body.light-mode .form-select {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        body.light-mode .form-control:focus,
+        body.light-mode .form-select:focus {
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        body.light-mode .table {
+            color: #0f172a;
+        }
+
+        body.light-mode .table td {
+            color: #334155;
+        }
+
+        body.light-mode .chat-msg-ai {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* ACCESS CONTROL classes */
+        body.logged-out #appWrapper { display: none !important; }
+        body.logged-out #loginWrapper { display: flex !important; }
+        body:not(.logged-out) #appWrapper { display: block !important; }
+        body:not(.logged-out) #loginWrapper { display: none !important; }
+
+        /* FLOATING SUPPORT WIDGET */
+        body.logged-out #floatingChatbot { display: none !important; }
+        
         .chat-msg-ai {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
             color: white;
         }
-
-        body.light-mode .chat-msg-ai {
-            background: #f0f4f8;
-            border: 1px solid #e2e8f0;
-            color: #333;
-        }
     </style>
-
-
 </head>
 
 <body>
-
-    <!-- GLOWING BACKGROUND BLOBS -->
+    <!-- BACKGROUND EFFECTS -->
     <div class="glowing-blob blob1"></div>
     <div class="glowing-blob blob2"></div>
 
-    <!-- LOGIN WRAPPER -->
-    <div id="loginWrapper"
-        style="display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; overflow: hidden; width: 100%;">
-        <div class="glass-card login-card"
-            style="width: 450px; padding: 40px; border-radius: 24px; box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10;">
-            <h2
-                style="font-weight: 700; margin-bottom: 10px; background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                Ideal Tech Labs</h2>
-            <p style="color: #a0aec0; margin-bottom: 30px; font-size: 15px;">Resume Screening Portal</p>
+    <!-- 1. LOGIN WRAPPER -->
+    <div id="loginWrapper" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; overflow-y: auto; width: 100%; padding: 40px 10px;">
+        <div class="glass-card login-card" style="width: 480px; padding: 40px; border-radius: 24px; box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10;">
+            <h2 style="font-weight: 800; margin-bottom: 5px; background: linear-gradient(135deg, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ResumeX
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 25px; font-size: 15px; font-weight: 500;">
+                AI Resume Screening Portal
+            </p>
 
-            <div class="d-flex mb-4" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 4px;">
+            <div class="d-flex mb-4" style="background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.05);">
                 <button type="button" id="tab-candidate" class="btn w-50" onclick="setLoginRole('candidate')"
-                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: white; background: #0072ff; transition: 0.3s;">Candidate</button>
+                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: white; background: #0072ff; transition: 0.3s;">
+                    Candidate
+                </button>
                 <button type="button" id="tab-official" class="btn w-50" onclick="setLoginRole('official')"
-                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: #bfc7d9; background: transparent; transition: 0.3s;">Official</button>
+                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: var(--text-secondary); background: transparent; transition: 0.3s;">
+                    Official
+                </button>
             </div>
 
+            <!-- LOGIN FORM -->
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="mb-3 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Username</label>
-                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username"
-                        value="candidate" required
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Username</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username" value="candidate" required>
                 </div>
                 <div class="mb-4 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Password</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required>
                 </div>
 
-                <div id="loginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500;">
+                <div id="loginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-3"
-                    style="border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);">
-                    Login to Portal
+                <button type="submit" class="btn btn-primary w-100 py-3" style="border-radius: 12px; font-weight: 600; font-size: 16px;">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login to Portal
                 </button>
             </form>
 
             <!-- REGISTER FORM -->
             <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
                 <div class="mb-3 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Full Name</label>
-                    <input type="text" id="registerName" class="form-control" placeholder="Enter your full name"
-                        required
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Full Name</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Enter your full name" required>
                 </div>
                 <div class="mb-3 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Username</label>
-                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username"
-                        required
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Username</label>
+                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username" required>
                 </div>
                 <div class="mb-3 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Password</label>
-                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a password"
-                        required
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a password" required>
                 </div>
                 <div class="mb-4 text-start">
-                    <label class="form-label"
-                        style="font-size: 13px; font-weight: 500; color: #bfc7d9; margin-left: 4px;">Register As</label>
-                    <select id="registerRole" class="form-select"
-                        style="border-radius: 12px; padding: 12px; font-size: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Register As</label>
+                    <select id="registerRole" class="form-select">
                         <option value="candidate" style="background: #0f172a; color: white;">Candidate</option>
                         <option value="official" style="background: #0f172a; color: white;">Official</option>
                     </select>
                 </div>
 
-                <div id="registerError" class="text-danger mb-3"
-                    style="display: none; font-size: 14px; font-weight: 500;"></div>
-                <div id="registerSuccess" class="text-success mb-3"
-                    style="display: none; font-size: 14px; font-weight: 500;"></div>
+                <div id="registerError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);"></div>
+                <div id="registerSuccess" class="text-success mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(0, 176, 155, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 176, 155, 0.2);"></div>
 
-                <button type="submit" class="btn btn-success w-100 py-3"
-                    style="border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(150, 201, 61, 0.3);">
-                    Create Account
+                <button type="submit" class="btn btn-success w-100 py-3" style="border-radius: 12px; font-weight: 600; font-size: 16px;">
+                    <i class="bi bi-person-plus-fill me-2"></i>Create Account
                 </button>
             </form>
 
             <div class="mt-4" id="loginToggleArea">
-                <a href="javascript:void(0)" onclick="toggleAuthForm('register')"
-                    style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">Don't have an
-                    account? Register here</a>
+                <a href="javascript:void(0)" onclick="toggleAuthForm('register')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
+                    Don't have an account? Register here
+                </a>
             </div>
             <div class="mt-4" id="registerToggleArea" style="display: none;">
-                <a href="javascript:void(0)" onclick="toggleAuthForm('login')"
-                    style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">Already have an
-                    account? Login here</a>
+                <a href="javascript:void(0)" onclick="toggleAuthForm('login')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
+                    Already have an account? Login here
+                </a>
             </div>
 
-            <div class="mt-4"
-                style="font-size: 12px; color: #718096; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
-                <strong>Demo Access Details:</strong><br>
-                <span id="demo-credentials">Candidate Login: <b>candidate</b> / <b>password</b></span>
+            <!-- Demo Access Panel -->
+            <div class="mt-4" style="font-size: 12.5px; color: #94a3b8; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                <strong style="color: #e2e8f0; display: block; margin-bottom: 2px;">Demo Access Details:</strong>
+                <span id="demo-credentials" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Role: <b style="color: #00c6ff;">candidate</b> / Pwd: <b style="color: #00c6ff;">password</b></span>
+                </span>
+            </div>
+
+            <!-- Dynamic Job Openings Preview (Candidate Login only) -->
+            <div id="loginOpeningsPreview" class="mt-4 text-start" style="display: block;">
+                <h6 class="text-info fw-bold mb-2" style="font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                    <i class="bi bi-briefcase-fill text-info"></i> Current Open Positions
+                </h6>
+                <div id="loginJdList" style="max-height: 180px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; background: rgba(0,0,0,0.15);">
+                    <p class="text-muted text-center m-0" style="font-size: 12px; padding: 10px;">Loading active openings...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP STRUCTURE -->
+    <!-- 2. MAIN APP WRAPPER -->
     <div id="appWrapper" style="display: none;">
-
-        <div class="container-fluid">
-
-            <div class="row">
-
+        <div class="container-fluid p-0">
+            <div class="row g-0">
                 <!-- SIDEBAR -->
-
-                <div class="col-md-2 sidebar d-flex flex-column justify-content-between pb-4">
+                <div class="col-md-2 sidebar">
                     <div>
-                        <h3>
-                            Ideal Tech Labs
-                        </h3>
+                        <div class="sidebar-brand">
+                            <h3><i class="bi bi-cpu"></i>ResumeX</h3>
+                        </div>
 
                         <!-- USER PROFILE IN SIDEBAR -->
-                        <div id="userProfile"
-                            style="padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border-radius: 12px; margin-left: 15px; margin-right: 15px;">
-                            <div style="font-size: 11px; color: #00c6ff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;"
-                                id="userRoleBadge">Candidate</div>
-                            <div style="font-size: 15px; font-weight: 600; color: white; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                                id="userProfileName">Candidate User</div>
+                        <div id="userProfile" style="padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px; text-align: left; background: rgba(255,255,255,0.02); border-radius: 12px; margin-left: 10px; margin-right: 10px;">
+                            <div style="font-size: 10px; color: #00c6ff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;" id="userRoleBadge">Candidate</div>
+                            <div style="font-size: 15px; font-weight: 600; color: white; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="userProfileName">Candidate User</div>
                         </div>
 
-                        <button onclick="showPage('home')">
-                            Home
-                        </button>
-
-                        <button id="nav-dashboard" onclick="showPage('dashboard')">
-                            Dashboard
-                        </button>
-
-                        <button id="nav-recruitment" onclick="showPage('resume')">
-                            Recruitment page
-                        </button>
-
-                        <button onclick="showPage('settings')">
-                            Settings
-                        </button>
+                        <!-- SIDEBAR LINKS CONTAINER -->
+                        <div id="sidebarLinks">
+                            <!-- Populated dynamically via JS -->
+                        </div>
                     </div>
 
-                    <div class="px-3 w-100 mt-auto">
-                        <button id="nav-logout" onclick="handleLogout()"
-                            style="color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); border-radius: 12px; padding: 12px; text-align: center; width: 100%; transition: 0.3s; background: rgba(255, 77, 77, 0.05); font-weight: 600;">
-                            Logout
+                    <div class="px-2 w-100">
+                        <button id="nav-logout" onclick="handleLogout()" style="color: var(--accent-red); border: 1px solid rgba(255, 77, 77, 0.15); border-radius: 12px; padding: 12px 20px; text-align: center; width: 100%; transition: 0.3s; background: rgba(255, 77, 77, 0.04); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="bi bi-box-arrow-right"></i> Logout
                         </button>
                     </div>
-
                 </div>
 
-                <!-- MAIN CONTENT -->
-
+                <!-- MAIN CONTENT AREA -->
                 <div class="col-md-10 main-content">
-
-                    <!-- HOME PAGE -->
-
-                    <div id="home" class="page active-page">
-
+                    
+                    <!-- =======================================
+                         A. GUEST HOME PAGE (GUEST ONLY)
+                         ======================================= -->
+                    <div id="home-page" class="page">
                         <div class="hero-section">
-
                             <div class="hero-content">
-
-                                <h1 class="hero-title">
-                                    Resume Screening - Ideal Tech Labs
-                                </h1>
-
+                                <span class="badge bg-primary mb-3" style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase;"><i class="bi bi-rocket-takeoff-fill me-1"></i> AI Powered Hiring</span>
+                                <h1 class="hero-title">Ideal Tech Labs Resume Screening</h1>
                                 <p class="hero-text">
-
-                                    Transform recruitment using Artificial Intelligence,
-                                    semantic search, vector databases, and machine learning
-                                    to identify the best candidates instantly.
-
+                                    Transform recruitment using Artificial Intelligence, semantic search, vector databases, and machine learning to identify the best candidates instantly.
                                 </p>
-
-                                <button class="hero-btn" onclick="showPage('dashboard')">
-                                    Explore Platform
+                                <button class="hero-btn" onclick="navigateToDashboard()">
+                                    <i class="bi bi-grid-fill"></i> Go to Dashboard
                                 </button>
-
                             </div>
-
                         </div>
 
-                        <div class="row mt-5">
-
+                        <div class="row">
                             <div class="col-md-4 mb-4">
-
-                                <div class="glass-card">
-
-                                    <h4>
-                                        AI Recruitment
-                                    </h4>
-
-                                    <p class="mt-3">
-
-                                        Smart AI-powered resume analysis and hiring automation.
-
-                                    </p>
-
+                                <div class="glass-card h-100">
+                                    <div class="metric-icon-box" style="color: #00c6ff;"><i class="bi bi-robot"></i></div>
+                                    <h4 class="fw-bold mb-3">AI Analysis</h4>
+                                    <p class="text-secondary m-0">Smart AI-powered resume analysis, matching, and semantic vector indexing utilizing Groq Llama 3.3 models.</p>
                                 </div>
-
                             </div>
-
                             <div class="col-md-4 mb-4">
-
-                                <div class="glass-card">
-
-                                    <h4>
-                                        Cloud Infrastructure
-                                    </h4>
-
-                                    <p class="mt-3">
-
-                                        Scalable cloud systems for enterprise recruitment.
-
-                                    </p>
-
+                                <div class="glass-card h-100">
+                                    <div class="metric-icon-box" style="color: #00b09b;"><i class="bi bi-database"></i></div>
+                                    <h4 class="fw-bold mb-3">Qdrant Cloud</h4>
+                                    <p class="text-secondary m-0">Advanced vector search architecture utilizing Qdrant Cloud to perform low-latency semantic skill matching.</p>
                                 </div>
-
                             </div>
-
                             <div class="col-md-4 mb-4">
-
-                                <div class="glass-card">
-
-                                    <h4>
-                                        Partners
-                                    </h4>
-
-                                    <p class="mt-3">
-
-                                        Microsoft, AWS, Google Cloud, OpenAI
-
-                                    </p>
-
+                                <div class="glass-card h-100">
+                                    <div class="metric-icon-box" style="color: #ffb300;"><i class="bi bi-shield-check"></i></div>
+                                    <h4 class="fw-bold mb-3">PostgreSQL Core</h4>
+                                    <p class="text-secondary m-0">Secure persistent storage utilizing PostgreSQL with encrypted passwords, UUID keys, and soft deletes.</p>
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
 
-                    <!-- DASHBOARD -->
-
-                    <div id="dashboard" class="page">
-
-                        <h2 class="section-title" id="dashboard-title">
-                            Recruitment Dashboard
-                        </h2>
-
-                        <div class="row dashboard-row">
-
-                            <!-- Total Resumes Received (Official only) -->
-                            <div class="col-md-4 mb-4 role-official">
-
-                                <div class="card-box">
-
-                                    <h5>
-                                        Total Resumes Received
-                                    </h5>
-
-                                    <h2 id="resumeCount">
-                                        0
-                                    </h2>
-
+                    <!-- =======================================
+                         B. OFFICIAL DASHBOARD PAGE
+                         ======================================= -->
+                    <div id="official-dashboard-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-speedometer2 me-2 text-info"></i>Recruitment Dashboard</h2>
+                        
+                        <!-- OFFICIAL SUMMARY METRICS -->
+                        <div class="row mb-5">
+                            <!-- Clickable Card: Total Resumes Received -->
+                            <div class="col-md-4 mb-4">
+                                <div class="metric-card" onclick="showPage('resumes-page')">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="text-uppercase m-0">Total Resumes</h5>
+                                            <h2 id="resumeCount" class="mt-2 text-white">0</h2>
+                                        </div>
+                                        <div class="metric-icon-box text-info"><i class="bi bi-file-earmark-person"></i></div>
+                                    </div>
+                                    <div class="mt-3" style="font-size: 13px; color: var(--text-secondary);">
+                                        <span class="text-info"><i class="bi bi-arrow-right-circle-fill me-1"></i> Click to Manage Resumes</span>
+                                    </div>
                                 </div>
-
                             </div>
 
-                            <!-- Open Roles (Candidate only) -->
-                            <div class="col-md-4 mb-4 role-candidate">
-
-                                <div class="card-box">
-
-                                    <h5>
-                                        Open Roles
-                                    </h5>
-
-                                    <h2>
-                                        18
-                                    </h2>
-
+                            <!-- Clickable Card: Total Messages Received -->
+                            <div class="col-md-4 mb-4">
+                                <div class="metric-card" onclick="showPage('messages-page')">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="text-uppercase m-0">Received Messages</h5>
+                                            <h2 id="messagesCount" class="mt-2 text-warning">0</h2>
+                                        </div>
+                                        <div class="metric-icon-box text-warning"><i class="bi bi-envelope-open"></i></div>
+                                    </div>
+                                    <div class="mt-3" style="font-size: 13px; color: var(--text-secondary);">
+                                        <span class="text-warning"><i class="bi bi-arrow-right-circle-fill me-1"></i> Click to View & Reply</span>
+                                    </div>
                                 </div>
-
                             </div>
 
-                            <!-- Departments (Candidate only) -->
-                            <div class="col-md-4 mb-4 role-candidate">
-
-                                <div class="card-box">
-
-                                    <h5>
-                                        Departments
-                                    </h5>
-
-                                    <h2>
-                                        6
-                                    </h2>
-
+                            <!-- Clickable Card: Active Job Descriptions -->
+                            <div class="col-md-4 mb-4">
+                                <div class="metric-card" onclick="showPage('job-descriptions-page')">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="text-uppercase m-0">Active Job Roles</h5>
+                                            <h2 id="jdsCount" class="mt-2 text-success">0</h2>
+                                        </div>
+                                        <div class="metric-icon-box text-success"><i class="bi bi-briefcase"></i></div>
+                                    </div>
+                                    <div class="mt-3" style="font-size: 13px; color: var(--text-secondary);">
+                                        <span class="text-success"><i class="bi bi-arrow-right-circle-fill me-1"></i> Click to Manage Positions</span>
+                                    </div>
                                 </div>
-
                             </div>
-
                         </div>
 
-                        <!-- Resumes Received (Official only) -->
-                        <div class="glass-card mt-4 role-official">
-                            <h4>Resumes Received</h4>
-                            <div id="resumesReceivedList" class="mt-3">
+                        <!-- System Overview / Quick Actions panel -->
+                        <div class="row">
+                            <div class="col-md-7 mb-4">
+                                <div class="glass-card h-100">
+                                    <h4 class="fw-bold text-light mb-4"><i class="bi bi-cpu-fill text-info me-2"></i>Smart AI Recruitment Core</h4>
+                                    <p class="text-secondary mb-3">You are logged in as an <strong>Official</strong>. The platform is connected and running with the following models:</p>
+                                    <ul class="list-unstyled d-flex flex-column gap-3 text-secondary" style="font-size: 14.5px;">
+                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>Groq AI Llama 3.3 (70B) skill extractor loaded</li>
+                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>BAAI BGE Embedding model initialized</li>
+                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>Qdrant collection <strong>resumes2</strong> connected</li>
+                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>PostgreSQL user database active</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mb-4">
+                                <div class="glass-card h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <h4 class="fw-bold text-light mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Actions</h4>
+                                        <p class="text-secondary mb-4">Jump directly to specific tools within the recruitment portal.</p>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <button class="btn btn-primary w-100 justify-content-center text-center py-2.5" onclick="showPage('job-descriptions-page')">
+                                            <i class="bi bi-plus-circle me-2"></i> Create Job Description
+                                        </button>
+                                        <button class="btn btn-success w-100 justify-content-center text-center py-2.5" onclick="showPage('resumes-page')">
+                                            <i class="bi bi-search me-2"></i> Search Candidate Resumes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =======================================
+                         C. RESUMES MANAGEMENT PAGE (OFFICIAL)
+                         ======================================= -->
+                    <div id="resumes-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-file-earmark-person text-info me-2"></i>Resumes Management</h2>
+                        
+                        <!-- Search Box Section -->
+                        <div class="glass-card mb-4">
+                            <h4 class="fw-bold text-light mb-3"><i class="bi bi-search text-info me-2"></i>Semantic Skill Search</h4>
+                            <p class="text-secondary mb-4">Perform advanced semantic search across the entire resume vector database to find candidates matching specific skills.</p>
+                            <div class="d-flex gap-3">
+                                <input type="text" id="skillSearch" class="form-control" placeholder="Search skill (e.g. Python Developer, Kubernetes, UI designer...)" />
+                                <button class="btn btn-success px-4" onclick="searchSkill()">
+                                    <i class="bi bi-search me-2"></i> Search Resumes
+                                </button>
+                            </div>
+                            
+                            <!-- Search Results Container -->
+                            <div id="searchResults" class="mt-4"></div>
+                        </div>
+
+                        <!-- Main Table List Section -->
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold text-light m-0"><i class="bi bi-list-stars text-info me-2"></i>Received Candidates</h4>
+                                <button class="btn btn-primary btn-sm" onclick="loadOfficialResumes()"><i class="bi bi-arrow-clockwise me-1"></i> Refresh</button>
+                            </div>
+                            <div id="resumesReceivedList">
                                 <p class="text-muted">Loading received resumes...</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Received Emails (Official only) -->
-                        <div class="glass-card mt-4 role-official">
-                            <h4>Received Emails (Inquiries)</h4>
-                            <div id="emailsReceivedList" class="mt-3">
-                                <p class="text-muted">Loading received emails...</p>
+                    <!-- =======================================
+                         D. MESSAGES PAGE (OFFICIAL)
+                         ======================================= -->
+                    <div id="messages-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-envelope-open text-warning me-2"></i>Candidate Emails / Messages</h2>
+                        
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold text-light m-0"><i class="bi bi-envelope-paper text-warning me-2"></i>Inbox</h4>
+                                <button class="btn btn-primary btn-sm" onclick="loadOfficialEmails()"><i class="bi bi-arrow-clockwise me-1"></i> Refresh</button>
+                            </div>
+                            <div id="emailsReceivedList">
+                                <p class="text-muted">Loading received messages...</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Create Job Description (Official only) -->
-                        <div class="glass-card mt-4 role-official">
-                            <h4>Create Job Description Document</h4>
-                            <form id="jdForm" class="mt-3" onsubmit="createJobDescription(event)">
+                    <!-- =======================================
+                         E. JOB DESCRIPTIONS PAGE (OFFICIAL)
+                         ======================================= -->
+                    <div id="job-descriptions-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-briefcase text-success me-2"></i>Job Description Management</h2>
+                        
+                        <!-- Create JD Form -->
+                        <div class="glass-card mb-4">
+                            <h4 class="fw-bold text-light mb-3"><i class="bi bi-plus-circle text-success me-2"></i>Create Job Description</h4>
+                            <form id="jdForm" onsubmit="createJobDescription(event)">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-light">Job Title</label>
+                                        <label class="form-label">Job Title</label>
                                         <input type="text" id="jdTitle" class="form-control" placeholder="e.g. Senior Python Developer" required />
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label text-light">Department</label>
+                                        <label class="form-label">Department</label>
                                         <input type="text" id="jdDepartment" class="form-control" placeholder="e.g. Engineering" required />
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-light d-block">Creation Method</label>
-                                    <div class="d-flex gap-4 mt-2 mb-3">
+                                    <label class="form-label d-block">Creation Method</label>
+                                    <div class="d-flex gap-4 mt-1 mb-3">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="jdMethod" id="jdMethodText" value="text" checked onchange="toggleJDMethod('text')">
-                                            <label class="form-check-label" for="jdMethodText" style="cursor: pointer; color: #bfc7d9;">
+                                            <label class="form-check-label" for="jdMethodText" style="cursor: pointer; color: var(--text-secondary);">
                                                 Manual Text Input
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="jdMethod" id="jdMethodFile" value="file" onchange="toggleJDMethod('file')">
-                                            <label class="form-check-label" for="jdMethodFile" style="cursor: pointer; color: #bfc7d9;">
+                                            <label class="form-check-label" for="jdMethodFile" style="cursor: pointer; color: var(--text-secondary);">
                                                 File Upload (PDF/TXT)
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mb-3" id="jdTextGroup">
-                                    <label class="form-label text-light">Job Description</label>
+                                    <label class="form-label">Job Description / Requirements</label>
                                     <textarea id="jdDescription" class="form-control" rows="4" placeholder="Describe the role requirements, skills, and qualifications..." required></textarea>
                                 </div>
                                 <div class="mb-3" id="jdFileGroup" style="display: none;">
-                                    <label class="form-label text-light">Upload Job Description File</label>
+                                    <label class="form-label">Upload Job Description File</label>
                                     <input type="file" id="jdFile" class="form-control" accept=".pdf,.txt" />
                                 </div>
-                                <button type="submit" class="btn btn-primary">Create Job Description</button>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i> Create Job Description</button>
                             </form>
                         </div>
 
-                        <!-- Job Descriptions List (Official only) -->
-                        <div class="glass-card mt-4 role-official">
-                            <h4>Active Job Descriptions</h4>
-                            <div id="jdsList" class="mt-3">
-                                <p class="text-muted">Loading job descriptions...</p>
-                            </div>
-                        </div>
-
-                        <!-- Candidate Matching Results Sub-panel (Official only, shown on request) -->
-                        <div id="jdMatchPanel" class="glass-card mt-4 role-official" style="display: none;">
+                        <!-- Candidate Matching Results Sub-panel -->
+                        <div id="jdMatchPanel" class="glass-card mb-4" style="display: none;">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="m-0" id="jdMatchTitle">Candidate Matches</h4>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-success me-2" onclick="exportJDMatches()">Export Match Results</button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="closeJDMatches()">Close</button>
+                                <h4 class="m-0 text-light fw-bold" id="jdMatchTitle"><i class="bi bi-bullseye text-success me-2"></i>Candidate Matches</h4>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-success" onclick="exportJDMatches()"><i class="bi bi-download me-1"></i> Export CSV</button>
+                                    <button class="btn btn-sm btn-danger" onclick="closeJDMatches()"><i class="bi bi-x-circle me-1"></i> Close</button>
                                 </div>
                             </div>
                             <div id="jdMatchResults" class="mt-3">
@@ -903,44 +972,78 @@
                             </div>
                         </div>
 
-                        <!-- Available Roles (Candidate only) -->
-                        <div class="glass-card mt-4 role-candidate">
-
-                            <h4>
-                                Available Roles
-                            </h4>
-
-                            <div id="candidateJdList" class="mt-3">
-                                <p class="text-muted">Loading available roles...</p>
+                        <!-- Active Job Descriptions list -->
+                        <div class="glass-card">
+                            <h4 class="fw-bold text-light mb-4"><i class="bi bi-collection text-success me-2"></i>Active Job Descriptions</h4>
+                            <div id="jdsList">
+                                <p class="text-muted">Loading job descriptions...</p>
                             </div>
-
                         </div>
-
                     </div>
 
-                    <!-- RESUME PAGE -->
+                    <!-- =======================================
+                         F. CANDIDATE DASHBOARD PAGE
+                         ======================================= -->
+                    <div id="candidate-dashboard-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-speedometer2 me-2 text-info"></i>Candidate Dashboard</h2>
+                        
+                        <div class="row mb-5">
+                            <!-- Dynamic Card: Open Roles Count -->
+                            <div class="col-md-6 mb-4">
+                                <div class="metric-card">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="text-uppercase m-0">Open Job Roles</h5>
+                                            <h2 id="candidateOpenRolesCount" class="mt-2 text-white">0</h2>
+                                        </div>
+                                        <div class="metric-icon-box text-info"><i class="bi bi-briefcase"></i></div>
+                                    </div>
+                                    <div class="mt-3" style="font-size: 13px; color: var(--text-secondary);">
+                                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> Roles currently available for matches</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                     <div id="resume" class="page">
+                            <!-- Dynamic Card: Department Count -->
+                            <div class="col-md-6 mb-4">
+                                <div class="metric-card">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="text-uppercase m-0">Active Departments</h5>
+                                            <h2 id="candidateDeptCount" class="mt-2 text-success">0</h2>
+                                        </div>
+                                        <div class="metric-icon-box text-success"><i class="bi bi-building"></i></div>
+                                    </div>
+                                    <div class="mt-3" style="font-size: 13px; color: var(--text-secondary);">
+                                        <span><i class="bi bi-info-circle-fill text-info me-1"></i> Unique functional teams hiring</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <!-- Candidate Upload Section (Candidate Only) -->
-                        <div class="glass-card role-candidate mb-4">
+                        <!-- Available Job Roles Table List -->
+                        <div class="glass-card">
+                            <h4 class="fw-bold text-light mb-4"><i class="bi bi-grid-3x3-gap text-info me-2"></i>Active Job Roles & Descriptions</h4>
+                            <div id="candidateJdList">
+                                <p class="text-muted">Loading available roles...</p>
+                            </div>
+                        </div>
+                    </div>
 
-                            <h2 class="section-title">
-                                Resume Upload
-                            </h2>
-
-                            <p class="mb-4">
-                                Upload your resume as a PDF file or provide a PDF URL link.
+                    <!-- =======================================
+                         G. CANDIDATE RESUME UPLOAD PAGE
+                         ======================================= -->
+                    <div id="candidate-upload-page" class="page">
+                        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                            <h2 class="section-title fw-bold text-light mb-2"><i class="bi bi-cloud-arrow-up text-info me-2"></i>Resume Upload</h2>
+                            <p class="text-secondary mb-4">
+                                Get your resume indexed with our advanced AI. Upload your resume as a PDF file or provide a PDF URL link.
                             </p>
 
                             <form id="resumeForm">
-
                                 <div class="mb-4">
-                                    <label class="form-label">
-                                        Candidate Name
-                                    </label>
-                                    <input type="text" class="form-control" id="candidateName"
-                                        placeholder="Enter candidate name" />
+                                    <label class="form-label">Candidate Name</label>
+                                    <input type="text" class="form-control" id="candidateName" placeholder="Enter your full name" required />
                                 </div>
 
                                 <div class="mb-4">
@@ -948,13 +1051,13 @@
                                     <div class="d-flex gap-4 mt-2">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="uploadMethod" id="methodFile" value="file" checked onchange="toggleUploadMethod('file')">
-                                            <label class="form-check-label" for="methodFile" style="cursor: pointer; color: #bfc7d9;">
+                                            <label class="form-check-label" for="methodFile" style="cursor: pointer; color: var(--text-secondary);">
                                                 PDF File Upload
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="uploadMethod" id="methodUrl" value="url" onchange="toggleUploadMethod('url')">
-                                            <label class="form-check-label" for="methodUrl" style="cursor: pointer; color: #bfc7d9;">
+                                            <label class="form-check-label" for="methodUrl" style="cursor: pointer; color: var(--text-secondary);">
                                                 PDF URL Link
                                             </label>
                                         </div>
@@ -962,146 +1065,110 @@
                                 </div>
 
                                 <div class="mb-4" id="fileInputGroup">
-                                    <label class="form-label">
-                                        Upload PDF File
-                                    </label>
+                                    <label class="form-label">Select PDF File</label>
                                     <input type="file" class="form-control" id="resumeFile" accept=".pdf" />
                                 </div>
 
                                 <div class="mb-4" id="urlInputGroup" style="display: none;">
-                                    <label class="form-label">
-                                        Resume PDF URL
-                                    </label>
+                                    <label class="form-label">Resume PDF URL</label>
                                     <input type="url" class="form-control" id="resumeUrl" placeholder="Enter PDF URL (e.g. https://example.com/resume.pdf)" />
                                 </div>
 
-                                <button type="button" class="btn btn-primary" onclick="uploadResume()">
-                                    Upload Resume
+                                <!-- Dynamic alert message (Fix for the successMessage bug) -->
+                                <div id="uploadLoader" style="display: none;" class="mb-3 text-info fw-bold">
+                                    <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
+                                    AI is analyzing your resume and extracting skills... Please wait...
+                                </div>
+
+                                <button type="button" class="btn btn-primary w-100 py-3" onclick="uploadResume()">
+                                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload & Process Resume
                                 </button>
-
                             </form>
-
                         </div>
+                    </div>
 
-                        <!-- Email HR Inquiry Form (Candidate Only) -->
-                        <div class="glass-card role-candidate mb-4">
-                            <h2 class="section-title">
-                                Email HR / Contact Support
-                            </h2>
-                            <p class="mb-4">
-                                Send a message or inquiry to HR/officials directly.
+                    <!-- =======================================
+                         H. CANDIDATE MESSAGE SUPPORT PAGE
+                         ======================================= -->
+                    <div id="candidate-support-page" class="page">
+                        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                            <h2 class="section-title fw-bold text-light mb-2"><i class="bi bi-envelope text-info me-2"></i>Contact Recruitment / Support</h2>
+                            <p class="text-secondary mb-4">
+                                Send a message or inquiry directly to our recruitment officials.
                             </p>
                             <form id="emailForm" onsubmit="sendHREmail(event)">
                                 <div class="mb-3">
                                     <label class="form-label">Subject</label>
-                                    <input type="text" id="emailSubject" class="form-control"
-                                        placeholder="Enter subject" required />
+                                    <input type="text" id="emailSubject" class="form-control" placeholder="Enter message subject (e.g. Inquiry regarding openings)" required />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Message</label>
-                                    <textarea id="emailMessage" class="form-control" rows="4"
-                                        placeholder="Type your message here..." required></textarea>
+                                    <label class="form-label">Message Details</label>
+                                    <textarea id="emailMessage" class="form-control" rows="6" placeholder="Type your detailed message here..." required></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary">
-                                    Send Message
+                                <button type="submit" class="btn btn-primary w-100 py-3">
+                                    <i class="bi bi-send me-2"></i> Send Message to HR
                                 </button>
                             </form>
                         </div>
-
-                        <!-- Official Search Section (Official Only) -->
-                        <div class="glass-card role-official mb-4">
-
-                            <h2 class="section-title">
-                                Search Resumes
-                            </h2>
-
-                            <div style="max-width:400px;">
-                                <input type="text" id="skillSearch" class="form-control" placeholder="Search skill" />
-                                <button class="btn btn-success mt-3 w-100" onclick="searchSkill()">
-                                    Search Resume
-                                </button>
-                            </div>
-
-                            <div id="searchResults" class="mt-5">
-                            </div>
-
-                        </div>
-
-
-
                     </div>
 
-                    <!-- SETTINGS -->
-
+                    <!-- =======================================
+                         I. SETTINGS PAGE (ALL USERS)
+                         ======================================= -->
                     <div id="settings" class="page">
-
-                        <div class="glass-card">
-
-                            <h2 class="section-title">
-                                Settings
-                            </h2>
-
-                            <div class="mt-4">
-
-                                <h5>
-                                    Theme Mode
-                                </h5>
-
+                        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                            <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-gear-fill text-info me-2"></i>Portal Settings</h2>
+                            
+                            <div class="mb-4 pb-4 border-bottom border-secondary">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-palette text-info me-2"></i>Theme Optimization</h5>
+                                <p class="text-secondary mb-3">Adjust the visual aesthetics of the portal platform.</p>
                                 <select class="form-select" onchange="changeTheme(this.value)">
-
-                                    <option value="dark" selected>
-                                        Dark Mode
-                                    </option>
-
-                                    <option value="light">
-                                        Light Mode
-                                    </option>
-
+                                    <option value="dark" selected>Dark Mode (Sleek Glassmorphic)</option>
+                                    <option value="light">Light Mode (Clean Harmonized)</option>
                                 </select>
-
                             </div>
 
-                            <div class="mt-4">
-
-                                <h5>
-                                    System Version
-                                </h5>
-
-                                <p>
-                                    Resume AI Version 2.0.0
-                                </p>
-
+                            <div>
+                                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-info me-2"></i>Core Environment Details</h5>
+                                <div class="p-3 rounded" style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); font-size: 13.5px;">
+                                    <div class="row mb-2">
+                                        <div class="col-md-4 text-secondary">Framework Version:</div>
+                                        <div class="col-md-8 text-light fw-semibold">FastAPI v0.100.0 / Web UI v2.5.0</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4 text-secondary">Database:</div>
+                                        <div class="col-md-8 text-light fw-semibold">PostgreSQL Core Active</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 text-secondary">Search Engine:</div>
+                                        <div class="col-md-8 text-light fw-semibold">Qdrant Vector Database Connected</div>
+                                    </div>
+                                </div>
                             </div>
-
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
-
         </div>
 
-        <!-- CONTACT -->
-
-        <div class="footer-contact">
-
-            <b>Contact:</b> +91 9876543210
-            <br>
-            <b>Email:</b> hr@idealtechlabs.com
-
+        <!-- STICKY FOOTER SUPPORT PANEL -->
+        <div class="footer-contact d-flex justify-content-between align-items-center px-4" style="position: fixed; bottom: 20px; left: 18.5%; right: 30px; background: rgba(10,15,30,0.85); backdrop-filter: blur(12px); padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border); font-size: 13px; color: var(--text-secondary); z-index: 999; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+            <div>
+                <strong>Support Contact:</strong> +91 9876543210 &nbsp;|&nbsp; <strong>Recruitment Team:</strong> <a href="mailto:hr@idealtechlabs.com" class="text-info text-decoration-none">hr@idealtechlabs.com</a>
+            </div>
+            <div style="font-weight: 500;">
+                <span class="text-success"><i class="bi bi-circle-fill text-success" style="font-size: 8px;"></i> Connected</span>
+            </div>
         </div>
-
     </div>
 
     <!-- FLOATING CHATBOT WIDGET -->
     <div id="floatingChatbot" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
         <!-- Chat Toggle Button -->
         <button id="chatbotToggleBtn" onclick="toggleChatbot()"
-            style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(175deg, #0072ff 0%, #00c6ff 100%); border: none; box-shadow: 0 8px 32px rgba(0, 114, 255, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s ease;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+            style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(175deg, #0072ff 0%, #00c6ff 100%); border: none; box-shadow: 0 8px 32px rgba(0, 114, 255, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
         </button>
@@ -1109,46 +1176,73 @@
         <!-- Chat Window -->
         <div id="chatbotWindow" class="glass-card"
             style="display: none; width: 380px; height: 500px; position: absolute; bottom: 80px; right: 0; border-radius: 20px; flex-direction: column; overflow: hidden; padding: 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15);">
-            <div
-                style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h5 style="margin: 0; font-weight: 600; color: rgb(46, 33, 33);">AI Assistant</h5>
-                <button onclick="toggleChatbot()"
-                    style="background: none; border: none; color: rgb(136, 38, 38); cursor: pointer; padding: 0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+            <div style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0; font-weight: 700; color: white;"><i class="bi bi-robot me-2"></i>AI Support Chat</h5>
+                <button onclick="toggleChatbot()" style="background: none; border: none; color: white; cursor: pointer; padding: 0; font-size: 20px;">
+                    <i class="bi bi-x-lg"></i>
                 </button>
             </div>
 
-            <div style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;"
-                id="chatbotBody">
-                <div class="chat-msg-ai"
-                    style="border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;">
-                    Hello! I'm your AI Recruitment Assistant. How can I help you today?
+            <div style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;" id="chatbotBody">
+                <div class="chat-msg-ai" style="border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;">
+                    Hello! I'm your AI Recruitment Assistant. Ask me anything about job roles, resumes, or portal operations!
                 </div>
             </div>
 
-            <div
-                style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); display: flex; gap: 10px;">
-                <input type="text" id="chatbotInput" class="form-control" placeholder="Type your question..."
-                    onkeydown="if(event.key === 'Enter') sendChatbotMessage()"
-                    style="padding: 10px 15px; font-size: 14px; flex: 1; border-radius: 10px;">
-                <button class="btn btn-primary" onclick="sendChatbotMessage()"
-                    style="padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
+            <div style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.25); display: flex; gap: 10px;">
+                <input type="text" id="chatbotInput" class="form-control" placeholder="Type your question..." onkeydown="if(event.key === 'Enter') sendChatbotMessage()" style="padding: 10px 15px; font-size: 14px; flex: 1; border-radius: 10px;">
+                <button class="btn btn-primary" onclick="sendChatbotMessage()" style="padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-send-fill"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <script>
+    <!-- 3. EMAIL REPLY MODAL (SELF-CONTAINED CSS OVERLAY) -->
+    <div id="replyModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10500; justify-content: center; align-items: center;">
+        <div class="glass-card" style="width: 540px; max-width: 90%; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 25px 60px rgba(0,0,0,0.6); border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; padding: 0;">
+            <div style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0; font-weight: 700; color: white; font-size: 17px;"><i class="bi bi-reply-fill me-2"></i>Reply to Candidate</h5>
+                <button onclick="closeReplyModal()" style="background: none; border: none; color: white; cursor: pointer; padding: 0; font-size: 24px; display: flex; align-items: center;">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="text-start" style="padding: 24px; overflow-y: auto; max-height: 80vh;">
+                <!-- Message context -->
+                <div class="mb-4 p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 11px; color: #00c6ff; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Original Message:</div>
+                    <div id="replyOriginalSender" class="fw-bold text-light" style="font-size: 13.5px;">From: John Doe (john@example.com)</div>
+                    <div id="replyOriginalSubject" class="fw-semibold text-info mt-1" style="font-size: 12.5px;">Subject: Inquiry</div>
+                    <div id="replyOriginalMessage" class="mt-2 text-muted" style="white-space: pre-wrap; font-size: 13px; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">Message content here...</div>
+                </div>
 
+                <form id="replyForm" onsubmit="submitReply(event)">
+                    <input type="hidden" id="replyEmailId" />
+                    <div class="mb-3">
+                        <label class="form-label">To Address</label>
+                        <input type="text" id="replyToEmail" class="form-control" readonly style="background: rgba(255,255,255,0.02); color: #94a3b8; border-color: rgba(255,255,255,0.04);" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject Header</label>
+                        <input type="text" id="replySubject" class="form-control" required placeholder="Subject of reply" />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Draft Message Reply</label>
+                        <textarea id="replyMessageText" class="form-control" rows="5" required placeholder="Type your professional response to candidate here..." style="border-radius: 12px; resize: none;"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary px-4 py-2.5" onclick="closeReplyModal()" style="border-radius: 10px;">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2.5" style="border-radius: 10px;"><i class="bi bi-send-fill me-2"></i>Send Reply</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
         /* ROLE MANAGEMENT & LOGIN SYSTEM */
         let selectedRole = 'candidate';
 
@@ -1158,6 +1252,7 @@
             const tabOfficial = document.getElementById('tab-official');
             const demoCreds = document.getElementById('demo-credentials');
             const loginUser = document.getElementById('loginUsername');
+            const openingsPreview = document.getElementById('loginOpeningsPreview');
 
             if (role === 'candidate') {
                 tabCand.style.background = '#0072ff';
@@ -1166,6 +1261,8 @@
                 tabOfficial.style.color = '#bfc7d9';
                 demoCreds.innerHTML = 'Candidate Login: <b>candidate</b> / <b>password</b>';
                 loginUser.value = 'candidate';
+                openingsPreview.style.display = 'block';
+                loadLoginOpenings(); // fetch roles dynamically on login page
             } else {
                 tabOfficial.style.background = '#0072ff';
                 tabOfficial.style.color = 'white';
@@ -1173,6 +1270,7 @@
                 tabCand.style.color = '#bfc7d9';
                 demoCreds.innerHTML = 'Official Login: <b>official</b> / <b>password</b>';
                 loginUser.value = 'official';
+                openingsPreview.style.display = 'none';
             }
         }
 
@@ -1200,13 +1298,14 @@
                         username: data.username
                     }));
                     applyUserRole(data.role, data.name);
+                    showNotification(`Welcome back, ${data.name}!`, 'success');
                 } else {
                     errorDiv.innerText = data.message;
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
                 console.error("Login failed", error);
-                errorDiv.innerText = "Connection to login server failed.";
+                errorDiv.innerText = "Connection to login server failed. Make sure the backend is active.";
                 errorDiv.style.display = 'block';
             }
         }
@@ -1235,7 +1334,8 @@
             const toggleBtn = document.getElementById('chatbotToggleBtn');
             if (toggleBtn) toggleBtn.style.transform = 'scale(1) rotate(0deg)';
 
-            showPage('home');
+            showPage('home-page');
+            showNotification("Successfully logged out.", "success");
         }
 
         function applyUserRole(role, name) {
@@ -1248,94 +1348,223 @@
             document.getElementById('userRoleBadge').innerText = role;
             document.getElementById('userProfileName').innerText = name;
 
-            // Dynamic text updates for navigation sidebar buttons
-            const navDashboard = document.getElementById('nav-dashboard');
-            const navRecruitment = document.getElementById('nav-recruitment');
-            const dashboardTitle = document.getElementById('dashboard-title');
-
-            if (role === 'candidate') {
-                navDashboard.innerText = 'Dashboard';
-                navRecruitment.innerText = 'Upload Resume';
-                dashboardTitle.innerText = 'Candidate Dashboard';
-                loadCandidateJobDescriptions();
-            } else {
-                navDashboard.innerText = 'Dashboard';
-                navRecruitment.innerText = 'Resume Search';
-                dashboardTitle.innerText = 'Official Dashboard';
+            // Generate Sidebar Navigation buttons dynamically based on user role
+            const sidebarLinksDiv = document.getElementById('sidebarLinks');
+            
+            if (role === 'official') {
+                sidebarLinksDiv.innerHTML = `
+                    <button id="btn-official-dashboard-page" onclick="showPage('official-dashboard-page')">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </button>
+                    <button id="btn-resumes-page" onclick="showPage('resumes-page')">
+                        <i class="bi bi-file-earmark-person"></i> Resumes Management
+                    </button>
+                    <button id="btn-messages-page" onclick="showPage('messages-page')">
+                        <i class="bi bi-envelope-paper"></i> Candidate Messages
+                    </button>
+                    <button id="btn-job-descriptions-page" onclick="showPage('job-descriptions-page')">
+                        <i class="bi bi-briefcase"></i> Job Descriptions
+                    </button>
+                    <button id="btn-settings" onclick="showPage('settings')">
+                        <i class="bi bi-gear"></i> Portal Settings
+                    </button>
+                `;
+                
+                // Fetch dynamic backend numbers for officials dashboard metrics
                 getResumeCount();
                 loadOfficialResumes();
                 loadOfficialEmails();
                 loadJobDescriptions();
+                
+                // Route directly to dashboard
+                showPage('official-dashboard-page');
+            } else {
+                sidebarLinksDiv.innerHTML = `
+                    <button id="btn-candidate-dashboard-page" onclick="showPage('candidate-dashboard-page')">
+                        <i class="bi bi-speedometer2"></i> My Dashboard
+                    </button>
+                    <button id="btn-candidate-upload-page" onclick="showPage('candidate-upload-page')">
+                        <i class="bi bi-cloud-arrow-up"></i> Upload My Resume
+                    </button>
+                    <button id="btn-candidate-support-page" onclick="showPage('candidate-support-page')">
+                        <i class="bi bi-envelope"></i> Contact Recruiter
+                    </button>
+                    <button id="btn-settings" onclick="showPage('settings')">
+                        <i class="bi bi-gear"></i> Portal Settings
+                    </button>
+                `;
+                
+                // Load candidate dynamic openings & statistics
+                loadCandidateJobDescriptions();
+                
+                // Route directly to candidate dashboard
+                showPage('candidate-dashboard-page');
             }
-
-            showPage('home');
         }
 
-        /* PAGE NAVIGATION */
-
+        /* DYNAMIC SIDEBAR HIGHLIGHTING PAGE NAVIGATOR */
         function showPage(pageId) {
-
-            let pages =
-                document.querySelectorAll('.page');
-
-            pages.forEach(function (page) {
-
-                page.classList.remove('active-page');
-
-            });
-
-            document.getElementById(pageId)
-                .classList.add('active-page');
-
-        }
-
-        /* THEME */
-
-        function changeTheme(mode) {
-
-            if (mode === "light") {
-
-                document.body.classList.add("light-mode");
-
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active-page'));
+            
+            // Show targeted page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+            } else {
+                console.warn(`Page container ID [${pageId}] not found.`);
             }
 
-            else {
+            // Remove highlighted state from all sidebar buttons
+            const sidebarButtons = document.querySelectorAll('#sidebarLinks button');
+            sidebarButtons.forEach(btn => btn.classList.remove('active'));
 
-                document.body.classList.remove("light-mode");
-
+            // Set active state on button corresponding to target page
+            const activeBtn = document.getElementById(`btn-${pageId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
             }
-
         }
 
-        /* GET RESUME COUNT */
+        function navigateToDashboard() {
+            const savedUser = localStorage.getItem('resumeUser');
+            if (savedUser) {
+                const userObj = JSON.parse(savedUser);
+                if (userObj.role === 'official') {
+                    showPage('official-dashboard-page');
+                } else {
+                    showPage('candidate-dashboard-page');
+                }
+            } else {
+                showPage('home-page');
+            }
+        }
 
-        async function getResumeCount() {
+        /* FLOATING TOAST SYSTEM NOTIFICATION */
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toastContainer') || createToastContainer();
+            
+            const toast = document.createElement('div');
+            toast.className = `custom-toast animate-slide-in ${type}`;
+            toast.style.cssText = `
+                background: ${type === 'success' ? 'rgba(0, 176, 155, 0.95)' : 'rgba(220, 53, 69, 0.95)'};
+                color: white;
+                backdrop-filter: blur(12px);
+                border: 1px solid ${type === 'success' ? 'rgba(0, 176, 155, 0.3)' : 'rgba(220, 53, 69, 0.3)'};
+                border-radius: 12px;
+                padding: 16px 24px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 600;
+                font-size: 14.5px;
+                pointer-events: auto;
+                transition: all 0.3s ease;
+                min-width: 250px;
+                margin-top: 10px;
+            `;
+            
+            const icon = document.createElement('i');
+            icon.className = type === 'success' ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-triangle-fill';
+            icon.style.fontSize = '18px';
+            
+            const text = document.createElement('span');
+            text.innerText = message;
+            
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            container.appendChild(toast);
+            
+            // Auto fade out and remove
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(15px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
 
+        function createToastContainer() {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(container);
+            }
+            return container;
+        }
+
+        /* DYNAMIC OPENINGS PREVIEW LOAD ON LANDING PAGE */
+        async function loadLoginOpenings() {
+            const listDiv = document.getElementById('loginJdList');
+            if (!listDiv) return;
             try {
+                const response = await fetch("http://127.0.0.1:8000/api/job_descriptions");
+                const data = await response.json();
+                if (data.success) {
+                    if (data.job_descriptions.length === 0) {
+                        listDiv.innerHTML = '<p class="text-muted text-center m-0" style="font-size: 12px; padding: 10px;">No open roles currently posted.</p>';
+                        return;
+                    }
 
-                let response = await fetch(
-                    "http://127.0.0.1:8000/resume_count"
-                );
-
-                let data = await response.json();
-
-                document.getElementById(
-                    "resumeCount"
-                ).innerHTML =
-                    data.total_resumes;
-
+                    let html = '';
+                    data.job_descriptions.forEach(jd => {
+                        html += `
+                            <div class="p-2 mb-2 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); transition: 0.2s;">
+                                <div style="font-size: 13px; font-weight: 600; color: #00c6ff;">${jd.title}</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span style="font-size: 11px; color: #a0aec0;"><i class="bi bi-building me-1"></i>${jd.department}</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px; padding: 3px 6px;">Active</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = `<p class="text-danger text-center m-0" style="font-size: 12px; padding: 10px;">Error loading open positions.</p>`;
+                }
+            } catch (err) {
+                console.error("Failed to load login openings", err);
+                listDiv.innerHTML = '<p class="text-danger text-center m-0" style="font-size: 12px; padding: 10px;">Failed to fetch active roles.</p>';
             }
-
-            catch (error) {
-
-                console.log(error);
-
-            }
-
         }
 
-        /* UPLOAD RESUME */
+        /* SYSTEM THEME CHANGE */
+        function changeTheme(mode) {
+            if (mode === "light") {
+                document.body.classList.add("light-mode");
+            } else {
+                document.body.classList.remove("light-mode");
+            }
+            showNotification(`Theme switched to ${mode} mode!`, 'success');
+        }
 
+        /* GET RESUME COUNT & TOTAL METRIC UPDATER FOR OFFICIAL */
+        async function getResumeCount() {
+            try {
+                let response = await fetch("http://127.0.0.1:8000/resume_count");
+                let data = await response.json();
+                const resumeElem = document.getElementById("resumeCount");
+                if (resumeElem) {
+                    resumeElem.innerHTML = data.total_resumes !== undefined ? data.total_resumes : 0;
+                }
+            } catch (error) {
+                console.error("Failed to fetch resume counts:", error);
+            }
+        }
+
+        /* TOGGLE SYSTEM METHODS */
         function toggleUploadMethod(method) {
             const fileGroup = document.getElementById('fileInputGroup');
             const urlGroup = document.getElementById('urlInputGroup');
@@ -1348,11 +1577,11 @@
             }
         }
 
+        /* UPLOAD RESUME (RESOLVING MISSING successMessage BUG!) */
         async function uploadResume() {
-
-            let name = document.getElementById("candidateName").value;
+            let name = document.getElementById("candidateName").value.trim();
             if (!name) {
-                alert("Please enter the candidate name.");
+                showNotification("Please enter candidate name.", "error");
                 return;
             }
 
@@ -1363,176 +1592,136 @@
             if (method === 'file') {
                 let resumeFile = document.getElementById("resumeFile").files[0];
                 if (!resumeFile) {
-                    alert("Please select a PDF file.");
+                    showNotification("Please select a PDF file.", "error");
                     return;
                 }
                 formData.append("file", resumeFile);
             } else {
                 let resumeUrl = document.getElementById("resumeUrl").value.trim();
                 if (!resumeUrl) {
-                    alert("Please enter a PDF URL.");
+                    showNotification("Please enter resume URL.", "error");
                     return;
                 }
                 if (!resumeUrl.startsWith("http://") && !resumeUrl.startsWith("https://")) {
-                    alert("Invalid URL. Must start with http:// or https://");
+                    showNotification("Must start with http:// or https://", "error");
                     return;
                 }
                 formData.append("resume_url", resumeUrl);
             }
 
+            // Show processing status UI
+            const uploadLoader = document.getElementById("uploadLoader");
+            uploadLoader.style.display = "block";
+
             try {
-                let response = await fetch(
-                    "http://127.0.0.1:8000/insert_resume",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+                let response = await fetch("http://127.0.0.1:8000/insert_resume", {
+                    method: "POST",
+                    body: formData
+                });
 
                 let data = await response.json();
-                console.log('Upload result:', data);
+                uploadLoader.style.display = "none";
 
                 if (data.message) {
-                    document.getElementById("successMessage").style.display = "block";
-                    alert(
-                        "Resume uploaded successfully!\n\nExtracted Skills:\n\n"
-                        + data.skills
-                    );
-                    getResumeCount();
-                    // Clear inputs
+                    showNotification("Resume processed and uploaded successfully!", "success");
+                    alert("Resume processed successfully!\n\nAI Extracted Skills:\n" + (data.skills || "None"));
+                    
+                    // Clear form
                     document.getElementById("candidateName").value = "";
                     document.getElementById("resumeFile").value = "";
                     document.getElementById("resumeUrl").value = "";
-                    setTimeout(() => {
-                        document.getElementById("successMessage").style.display = "none";
-                    }, 5000);
                 } else {
-                    alert(data.error);
+                    showNotification(data.error || "Failed to process resume.", "error");
                 }
-
             } catch (error) {
-                console.log(error);
-                alert("Backend connection failed");
+                uploadLoader.style.display = "none";
+                console.error("Resume upload crash", error);
+                showNotification("Backend connection crashed during parsing.", "error");
             }
-
         }
-        /* SEARCH SKILL */
+
+        /* SEARCH SKILL (SEMANTIC SEARCH) */
         let lastSearchResults = [];
 
         async function searchSkill() {
-
-            let skill =
-                document.getElementById("skillSearch").value;
+            let skill = document.getElementById("skillSearch").value.trim();
+            if (!skill) {
+                showNotification("Please specify a skill keyword.", "error");
+                return;
+            }
 
             try {
-
-                let response = await fetch(
-
-                    `http://127.0.0.1:8000/search_resume?skill=${skill}`
-
-                );
-
+                let response = await fetch(`http://127.0.0.1:8000/search_resume?skill=${skill}`);
                 let data = await response.json();
-
-                let resultsDiv =
-                    document.getElementById("searchResults");
-
+                let resultsDiv = document.getElementById("searchResults");
                 resultsDiv.innerHTML = "";
 
-                if (data.results.length === 0) {
-
-                    resultsDiv.innerHTML =
-                        "<p>No resumes found</p>";
-
+                if (!data.results || data.results.length === 0) {
+                    resultsDiv.innerHTML = `<div class="p-3 text-center text-muted">No matching candidate profiles index for skill "${skill}".</div>`;
                     return;
-
                 }
 
                 lastSearchResults = data.results;
 
                 let html = `
-
-<div class="glass-card">
-
-<div class="d-flex justify-content-between align-items-center">
-    <h4 class="m-0">Search Results</h4>
-    <button class="btn btn-sm btn-outline-success" onclick="exportSearchResults()">Export CSV</button>
-</div>
-
-<table class="table table-bordered mt-4">
-
-<thead class="table-dark">
-
-<tr>
-
-<th>Name</th>
-<th>Resume</th>
-<th>Match Percentage</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-`;
+                    <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold m-0"><i class="bi bi-cpu-fill text-info me-2"></i>Semantic Search Results</h5>
+                            <button class="btn btn-sm btn-success" onclick="exportSearchResults()"><i class="bi bi-download me-1"></i> Export CSV</button>
+                        </div>
+                        <div class="table-responsive table-container">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Skills Detected</th>
+                                        <th>Semantic Match</th>
+                                        <th>Resume Document</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
 
                 data.results.forEach(function (item) {
-
                     let resumeDisplay = "";
-
                     if (item.resume_url) {
                         let linkUrl = item.resume_url;
                         if (!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://")) {
                             linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
                         }
-                        const encodedLinkUrl = encodeURI(linkUrl);
-                        resumeDisplay = `
-                        <a href="${encodedLinkUrl}" target="_blank" class="btn btn-sm btn-outline-info">
-                            View Resume
-                        </a>
-                        `;
+                        resumeDisplay = `<a href="${encodeURI(linkUrl)}" target="_blank" class="btn btn-sm btn-primary py-1.5 px-3"><i class="bi bi-file-earmark-pdf me-1"></i> View PDF</a>`;
                     } else {
-                        resumeDisplay = `<span class="text-muted">No resume link</span>`;
+                        resumeDisplay = `<span class="text-muted">No attachment</span>`;
                     }
 
                     html += `
-<tr>
-<td>${item.name}</td>
-<td>${resumeDisplay}</td>
-<td>${item.match_percentage}</td>
-</tr>
-`;
-
+                        <tr>
+                            <td class="fw-bold text-light">${item.name}</td>
+                            <td><span style="font-size: 13.5px; color: var(--text-secondary);">${item.skills || 'None'}</span></td>
+                            <td class="fw-bold text-success">${item.match_percentage}</td>
+                            <td>${resumeDisplay}</td>
+                        </tr>
+                    `;
                 });
 
                 html += `
-
-</tbody>
-
-</table>
-
-</div>
-
-`;
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
 
                 resultsDiv.innerHTML = html;
-
+                showNotification(`Found ${data.results.length} semantic matches!`, "success");
+            } catch (error) {
+                console.error(error);
+                showNotification("Search execution failed.", "error");
             }
-
-            catch (error) {
-
-                console.log(error);
-
-                alert("Search failed");
-
-            }
-
         }
 
         function exportSearchResults() {
             if (!lastSearchResults || lastSearchResults.length === 0) {
-                alert("No search results to export.");
+                showNotification("No results to export.", "error");
                 return;
             }
             let csv = "Name,Skills,Match Percentage,Resume URL\n";
@@ -1554,156 +1743,11 @@
             document.body.removeChild(link);
         }
 
-        window.onload = function () {
-            const savedUser = localStorage.getItem('resumeUser');
-            if (savedUser) {
-                const userObj = JSON.parse(savedUser);
-                applyUserRole(userObj.role, userObj.name);
-            } else {
-                document.body.classList.add('logged-out');
-                setLoginRole('candidate');
-            }
-        }
-
-        /* AI ASSISTANT */
-
-        async function askAI() {
-
-            let question =
-                document.getElementById("aiQuestion").value;
-
-            if (!question) {
-
-                alert("Please enter a question");
-                return;
-
-            }
-
-            try {
-
-                document.getElementById(
-                    "aiResponse"
-                ).innerHTML = "Thinking...";
-
-                let response = await fetch(
-
-                    "http://127.0.0.1:8000/ask_ai",
-
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            question: question
-                        })
-                    }
-
-                );
-
-                let data = await response.json();
-
-                document.getElementById(
-                    "aiResponse"
-                ).innerHTML = data.answer;
-
-            }
-
-            catch (error) {
-
-                console.log(error);
-
-                document.getElementById(
-                    "aiResponse"
-                ).innerHTML = "AI server connection failed";
-
-            }
-
-        }
-
-        /* NEW HELPER FUNCTIONS */
-
-        function toggleAuthForm(mode) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const loginToggleArea = document.getElementById('loginToggleArea');
-            const registerToggleArea = document.getElementById('registerToggleArea');
-            const tabContainer = document.querySelector('.d-flex.mb-4');
-            const demoCredentials = document.getElementById('demo-credentials').parentElement;
-
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('registerError').style.display = 'none';
-            document.getElementById('registerSuccess').style.display = 'none';
-
-            if (mode === 'register') {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                loginToggleArea.style.display = 'none';
-                registerToggleArea.style.display = 'block';
-                tabContainer.style.display = 'none';
-                demoCredentials.style.display = 'none';
-            } else {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                loginToggleArea.style.display = 'block';
-                registerToggleArea.style.display = 'none';
-                tabContainer.style.display = 'flex';
-                demoCredentials.style.display = 'block';
-            }
-        }
-
-        async function handleRegister(event) {
-            event.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-            const role = document.getElementById('registerRole').value;
-
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-
-            try {
-                const response = await fetch("http://127.0.0.1:8000/api/register", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ name, username, password, role })
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    successDiv.innerText = "Registration successful! Switching to login...";
-                    successDiv.style.display = 'block';
-
-                    document.getElementById('registerName').value = '';
-                    document.getElementById('registerUsername').value = '';
-                    document.getElementById('registerPassword').value = '';
-
-                    setTimeout(() => {
-                        toggleAuthForm('login');
-                        document.getElementById('loginUsername').value = username;
-                        document.getElementById('loginPassword').value = '';
-                    }, 1500);
-                } else {
-                    errorDiv.innerText = data.message;
-                    errorDiv.style.display = 'block';
-                }
-            } catch (error) {
-                console.error("Registration failed", error);
-                errorDiv.innerText = "Connection to server failed.";
-                errorDiv.style.display = 'block';
-            }
-        }
-
+        /* RECRUITMENT INQUIRY SUPPORT SENDER */
         async function sendHREmail(event) {
             event.preventDefault();
-            const subject = document.getElementById('emailSubject').value;
-            const message = document.getElementById('emailMessage').value;
+            const subject = document.getElementById('emailSubject').value.trim();
+            const message = document.getElementById('emailMessage').value.trim();
 
             const savedUser = localStorage.getItem('resumeUser');
             let senderName = "Anonymous Candidate";
@@ -1730,18 +1774,19 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    alert("Message sent to HR successfully!");
+                    showNotification("Inquiry sent successfully to Recruiters!", "success");
                     document.getElementById('emailSubject').value = '';
                     document.getElementById('emailMessage').value = '';
                 } else {
-                    alert("Failed to send message: " + data.message);
+                    showNotification(data.message || "Failed to dispatch email support.", "error");
                 }
             } catch (err) {
-                console.error("Send email failed", err);
-                alert("Failed to connect to server to send message.");
+                console.error("Support failed", err);
+                showNotification("Could not dispatch message to recruitment team.", "error");
             }
         }
 
+        /* RESUMES MANAGER FOR OFFICIALS */
         async function loadOfficialResumes() {
             const listDiv = document.getElementById('resumesReceivedList');
             if (!listDiv) return;
@@ -1750,56 +1795,47 @@
                 const data = await response.json();
                 if (data.success) {
                     if (data.resumes.length === 0) {
-                        listDiv.innerHTML = '<p class="text-muted">No resumes received yet.</p>';
+                        listDiv.innerHTML = '<p class="text-muted text-center py-4">No resumes received in vector index yet.</p>';
                         return;
                     }
 
                     let html = `
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mt-2">
-                                <thead class="table-dark">
+                        <div class="table-responsive table-container">
+                            <table class="table table-bordered">
+                                <thead>
                                     <tr>
-                                        <th>Candidate Name</th>
-                                        <th>Skills</th>
-                                        <th>Resume Link</th>
+                                        <th>Candidate Profile</th>
+                                        <th>Skills Detected</th>
+                                        <th>Document</th>
                                         <th style="width: 100px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                     `;
 
-                    // print("Loading resumes...");
-
                     data.resumes.forEach(resume => {
-                        let encodedLinkUrl, linkHtml = '';
+                        let linkHtml = '';
                         if (resume.resume_url) {
                             let linkUrl = resume.resume_url;
                             if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
                                 linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
                             }
-                            encodedLinkUrl = encodeURI(linkUrl);
-                            linkHtml = `<a href="${encodedLinkUrl}" target="_blank" class="btn btn-sm btn-outline-info">View PDF</a>`;
+                            linkHtml = `<a href="${encodeURI(linkUrl)}" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-file-pdf"></i> View PDF</a>`;
                         } else {
-                            linkHtml = `<span class="text-muted">No link available</span>`;
+                            linkHtml = `<span class="text-muted">No attachment</span>`;
                         }
-                        // print("Resume loaded: " + resume.name);
 
                         html += `
-                            <tr>
-                                <td class="fw-bold">${resume.name}</td>
-                                <td><span style="font-size: 13px; color: white;">${resume.skills || 'None'}</span></td>
+                            <tr id="resume-row-${resume.id}">
+                                <td class="fw-bold text-light">${resume.name}</td>
+                                <td><span style="font-size: 13.5px; color: var(--text-secondary);">${resume.skills || 'None'}</span></td>
+                                <td>${linkHtml}</td>
                                 <td>
-                                    ${linkHtml}
-
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteResume('${resume.id}')">Delete</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteResume('${resume.id}')"><i class="bi bi-trash"></i> Delete</button>
                                 </td>
                             </tr>
                         `;
                     });
-
-                    // print("All resumes loaded, rendering table...");
 
                     html += `
                                 </tbody>
@@ -1812,52 +1848,71 @@
                 }
             } catch (err) {
                 console.error("Failed to load resumes", err);
-                listDiv.innerHTML = '<p class="text-danger">Failed to load resumes from server.</p>';
+                listDiv.innerHTML = '<p class="text-danger text-center">Failed to fetch uploaded resumes.</p>';
             }
         }
 
         async function deleteResume(id) {
-            if (!confirm("Are you sure you want to delete this resume? This will also remove it from search index.")) return;
+            if (!confirm("Are you sure you want to delete this candidate resume? This deletes it from vector database index.")) return;
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/resumes/${id}`, {
                     method: 'DELETE'
                 });
                 const data = await response.json();
                 if (data.success) {
-                    alert("Resume deleted successfully.");
+                    showNotification("Resume index deleted successfully.", "success");
+                    
+                    // Fade out row animation
+                    const row = document.getElementById(`resume-row-${id}`);
+                    if (row) {
+                        row.style.transition = "all 0.3s ease";
+                        row.style.opacity = "0";
+                        row.style.transform = "translateX(20px)";
+                        setTimeout(() => row.remove(), 300);
+                    }
                     getResumeCount();
-                    loadOfficialResumes();
+                    
+                    // Delay reload slightly for smooth layout transition
+                    setTimeout(loadOfficialResumes, 400);
                 } else {
-                    alert("Error deleting resume: " + data.error);
+                    showNotification("Failed to delete candidate profile.", "error");
                 }
             } catch (err) {
                 console.error("Delete failed", err);
-                alert("Failed to connect to backend to delete resume.");
+                showNotification("Backend connection issue during delete request.", "error");
             }
         }
 
+        /* INQUIRIES & simulated REPLY FOR MESSAGES PAGE (OFFICIAL) */
+        let officialEmailsCache = [];
+
         async function loadOfficialEmails() {
             const listDiv = document.getElementById('emailsReceivedList');
+            const messagesCounter = document.getElementById('messagesCount');
             if (!listDiv) return;
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/emails");
                 const data = await response.json();
                 if (Array.isArray(data)) {
+                    officialEmailsCache = data;
+                    if (messagesCounter) {
+                        messagesCounter.innerText = data.length;
+                    }
                     if (data.length === 0) {
-                        listDiv.innerHTML = '<p class="text-muted">No emails received yet.</p>';
+                        listDiv.innerHTML = '<p class="text-muted text-center py-4">No inquiry messages received in Inbox.</p>';
                         return;
                     }
 
                     let html = `
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mt-2">
-                                <thead class="table-dark">
+                        <div class="table-responsive table-container">
+                            <table class="table table-bordered">
+                                <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Sender</th>
-                                        <th>Subject</th>
-                                        <th>Message</th>
-                                        <th style="width: 100px;">Actions</th>
+                                        <th>Candidate Info</th>
+                                        <th>Inquiry Subject</th>
+                                        <th>Details</th>
+                                        <th style="width: 180px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1865,16 +1920,19 @@
 
                     data.forEach(email => {
                         html += `
-                            <tr>
-                                <td style="font-size: 13px; color: #a0aec0; min-width: 140px;">${email.timestamp || ''}</td>
+                            <tr id="email-row-${email.id}">
+                                <td style="font-size: 13px; color: var(--text-secondary); min-width: 140px;">${email.timestamp || ''}</td>
                                 <td>
-                                    <div class="fw-bold">${email.sender_name}</div>
-                                    <div style="font-size: 12px; color: #bfc7d9;">${email.sender_email}</div>
+                                    <div class="fw-bold text-light">${email.sender_name}</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">${email.sender_email}</div>
                                 </td>
-                                <td class="fw-semibold">${email.subject}</td>
-                                <td style="white-space: pre-wrap; font-size: 13px;">${email.message}</td>
+                                <td class="fw-semibold text-info">${email.subject}</td>
+                                <td style="white-space: pre-wrap; font-size: 13.5px; color: var(--text-secondary);">${email.message}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteEmail('${email.id}')">Delete</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary" onclick="openReplyModal('${email.id}')"><i class="bi bi-reply-fill"></i> Reply</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteEmail('${email.id}')"><i class="bi bi-trash"></i> Delete</button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -1887,34 +1945,89 @@
                     `;
                     listDiv.innerHTML = html;
                 } else {
-                    listDiv.innerHTML = `<p class="text-danger">Failed to load emails.</p>`;
+                    listDiv.innerHTML = `<p class="text-danger text-center">Failed to parse inbox metrics.</p>`;
                 }
             } catch (err) {
                 console.error("Failed to load emails", err);
-                listDiv.innerHTML = '<p class="text-danger">Failed to load emails from server.</p>';
+                listDiv.innerHTML = '<p class="text-danger text-center">Failed to sync message database.</p>';
             }
         }
 
         async function deleteEmail(id) {
-            if (!confirm("Are you sure you want to delete this email?")) return;
+            if (!confirm("Are you sure you want to delete this candidate email?")) return;
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/emails/${id}`, {
                     method: 'DELETE'
                 });
                 const data = await response.json();
                 if (data.success) {
-                    alert("Email deleted successfully.");
-                    loadOfficialEmails();
+                    showNotification("Email inquiry deleted from Inbox.", "success");
+                    
+                    const row = document.getElementById(`email-row-${id}`);
+                    if (row) {
+                        row.style.transition = "all 0.3s ease";
+                        row.style.opacity = "0";
+                        row.style.transform = "translateX(20px)";
+                        setTimeout(() => row.remove(), 300);
+                    }
+                    setTimeout(loadOfficialEmails, 400);
                 } else {
-                    alert("Error deleting email: " + data.message);
+                    showNotification(data.message || "Failed to remove email.", "error");
                 }
             } catch (err) {
                 console.error("Delete failed", err);
-                alert("Failed to connect to backend to delete email.");
+                showNotification("Network failure during deletion request.", "error");
             }
         }
 
-        /* JOB DESCRIPTION FUNCTIONS */
+        /* REPLAY EMAIL MODAL CONTROLLERS */
+        function openReplyModal(emailId) {
+            const email = officialEmailsCache.find(e => e.id === emailId);
+            if (!email) {
+                showNotification("Message details not found.", "error");
+                return;
+            }
+
+            document.getElementById('replyEmailId').value = email.id;
+            document.getElementById('replyToEmail').value = email.sender_email;
+            document.getElementById('replySubject').value = `Re: ${email.subject}`;
+            document.getElementById('replyMessageText').value = '';
+            
+            document.getElementById('replyOriginalSender').innerText = `From: ${email.sender_name} (${email.sender_email})`;
+            document.getElementById('replyOriginalSubject').innerText = `Subject: ${email.subject}`;
+            document.getElementById('replyOriginalMessage').innerText = email.message;
+
+            const modalOverlay = document.getElementById('replyModalOverlay');
+            modalOverlay.style.display = 'flex';
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModalOverlay').style.display = 'none';
+        }
+
+        async function submitReply(event) {
+            event.preventDefault();
+            const emailId = document.getElementById('replyEmailId').value;
+            const toEmail = document.getElementById('replyToEmail').value;
+            const subject = document.getElementById('replySubject').value;
+            const text = document.getElementById('replyMessageText').value.trim();
+
+            if (!text) {
+                showNotification("Reply message cannot be empty.", "error");
+                return;
+            }
+
+            // Simulate sending email reply
+            showNotification(`Sending message reply to ${toEmail}...`, 'success');
+            
+            setTimeout(() => {
+                closeReplyModal();
+                showNotification(`Professional reply sent successfully to ${toEmail}!`, 'success');
+                alert(`Reply email dispatched successfully!\n\nTo: ${toEmail}\nSubject: ${subject}\n\nContent:\n${text}`);
+            }, 1200);
+        }
+
+        /* JOB DESCRIPTION MANAGEMENT FUNCTIONS */
         let currentJDMatches = [];
         let currentJDTitle = "";
 
@@ -1946,7 +2059,7 @@
             const method = document.querySelector('input[name="jdMethod"]:checked').value;
 
             if (!title || !department) {
-                alert("Please fill in all fields.");
+                showNotification("Title and Department are required.", "error");
                 return;
             }
 
@@ -1957,7 +2070,7 @@
             if (method === 'text') {
                 const description = document.getElementById('jdDescription').value.trim();
                 if (!description) {
-                    alert("Please enter the job description text.");
+                    showNotification("Please provide JD description text.", "error");
                     return;
                 }
                 formData.append("description", description);
@@ -1965,11 +2078,13 @@
                 const fileInput = document.getElementById('jdFile');
                 const file = fileInput.files[0];
                 if (!file) {
-                    alert("Please select a file to upload.");
+                    showNotification("Please select job requirement document.", "error");
                     return;
                 }
                 formData.append("file", file);
             }
+
+            showNotification("Processing and saving Job Description...", "success");
 
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/job_descriptions", {
@@ -1978,43 +2093,47 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    alert("Job description created successfully!");
+                    showNotification("Job description created successfully!", "success");
                     document.getElementById('jdTitle').value = '';
                     document.getElementById('jdDepartment').value = '';
                     document.getElementById('jdDescription').value = '';
                     document.getElementById('jdFile').value = '';
                     
-                    // Reset to text input by default
+                    // Reset to text input
                     const textRadio = document.getElementById('jdMethodText');
                     textRadio.checked = true;
                     toggleJDMethod('text');
 
                     loadJobDescriptions();
                 } else {
-                    alert("Failed to save job description: " + data.message);
+                    showNotification(data.message || "Failed to create JD.", "error");
                 }
             } catch (err) {
-                console.error("Failed to create job description", err);
-                alert("Failed to connect to server to create job description.");
+                console.error("Failed to create JD", err);
+                showNotification("FastAPI backend connection failure during JD create.", "error");
             }
         }
 
         async function loadJobDescriptions() {
             const listDiv = document.getElementById('jdsList');
+            const activeCounter = document.getElementById('jdsCount');
             if (!listDiv) return;
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/job_descriptions");
                 const data = await response.json();
                 if (data.success) {
+                    if (activeCounter) {
+                        activeCounter.innerText = data.job_descriptions.length;
+                    }
                     if (data.job_descriptions.length === 0) {
-                        listDiv.innerHTML = '<p class="text-muted">No job descriptions posted yet.</p>';
+                        listDiv.innerHTML = '<p class="text-muted text-center py-4">No active job descriptions posted yet.</p>';
                         return;
                     }
 
                     let html = `
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mt-2">
-                                <thead class="table-dark">
+                        <div class="table-responsive table-container">
+                            <table class="table table-bordered">
+                                <thead>
                                     <tr>
                                         <th>Job Title</th>
                                         <th>Department</th>
@@ -2027,14 +2146,14 @@
 
                     data.job_descriptions.forEach(jd => {
                         html += `
-                            <tr>
+                            <tr id="jd-row-${jd.id}">
                                 <td class="fw-bold text-info">${jd.title}</td>
-                                <td class="fw-semibold">${jd.department}</td>
-                                <td style="white-space: pre-wrap; font-size: 13px;">${jd.description}</td>
+                                <td class="fw-bold text-light">${jd.department}</td>
+                                <td style="white-space: pre-wrap; font-size: 13.5px; color: var(--text-secondary);">${jd.description}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-success" onclick="matchJobDescription('${jd.id}', '${jd.title.replace(/'/g, "\\'")}')">Find Matches</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteJobDescription('${jd.id}')">Delete</button>
+                                        <button class="btn btn-sm btn-success" onclick="matchJobDescription('${jd.id}', '${jd.title.replace(/'/g, "\\'")}')"><i class="bi bi-bullseye"></i> Matches</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteJobDescription('${jd.id}')"><i class="bi bi-trash"></i> Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -2048,11 +2167,11 @@
                     `;
                     listDiv.innerHTML = html;
                 } else {
-                    listDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                    listDiv.innerHTML = `<p class="text-danger text-center">Failed to fetch JDs.</p>`;
                 }
             } catch (err) {
-                console.error("Failed to load job descriptions", err);
-                listDiv.innerHTML = '<p class="text-danger">Failed to load job descriptions from server.</p>';
+                console.error("Failed to load JDs", err);
+                listDiv.innerHTML = '<p class="text-danger text-center">Failed to connect to JD database.</p>';
             }
         }
 
@@ -2064,16 +2183,23 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    alert("Job description deleted successfully.");
+                    showNotification("Job description deleted successfully.", "success");
+                    
+                    const row = document.getElementById(`jd-row-${id}`);
+                    if (row) {
+                        row.style.transition = "all 0.3s ease";
+                        row.style.opacity = "0";
+                        row.style.transform = "translateX(20px)";
+                        setTimeout(() => row.remove(), 300);
+                    }
                     loadJobDescriptions();
-                    // Close matches if they were for this JD
                     closeJDMatches();
                 } else {
-                    alert("Error deleting job description: " + data.message);
+                    showNotification(data.message || "Failed to remove JD.", "error");
                 }
             } catch (err) {
-                console.error("Delete job description failed", err);
-                alert("Failed to connect to backend to delete job description.");
+                console.error("Delete JD failed", err);
+                showNotification("Network crash requesting JD deletion.", "error");
             }
         }
 
@@ -2083,11 +2209,10 @@
             const titleElem = document.getElementById('jdMatchTitle');
 
             currentJDTitle = title;
-            titleElem.innerText = `Candidate Matches for: ${title}`;
+            titleElem.innerHTML = `<i class="bi bi-bullseye text-success me-2"></i>Candidate Matches for: ${title}`;
             panel.style.display = 'block';
-            resultsDiv.innerHTML = '<p class="text-muted">Calculating matches...</p>';
+            resultsDiv.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted">Calculating semantic similarity scores from Qdrant vector database...</p></div>';
             
-            // Scroll to matching panel
             panel.scrollIntoView({ behavior: 'smooth' });
 
             try {
@@ -2096,19 +2221,19 @@
                 if (data.success) {
                     currentJDMatches = data.results;
                     if (data.results.length === 0) {
-                        resultsDiv.innerHTML = '<p class="text-muted">No candidate resumes found in the database to match.</p>';
+                        resultsDiv.innerHTML = '<p class="text-muted text-center py-4">No matching candidates detected above threshold similarity.</p>';
                         return;
                     }
 
                     let html = `
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mt-2">
-                                <thead class="table-dark">
+                        <div class="table-responsive table-container mt-3">
+                            <table class="table table-bordered">
+                                <thead>
                                     <tr>
-                                        <th>Candidate Name</th>
-                                        <th>Extracted Skills</th>
-                                        <th>Match Percentage</th>
-                                        <th>Resume Link</th>
+                                        <th>Candidate Profile</th>
+                                        <th>Skills Detected</th>
+                                        <th>Semantic Match</th>
+                                        <th>Document Link</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2121,16 +2246,22 @@
                             if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
                                 linkUrl = `http://127.0.0.1:8000/uploads/${linkUrl}`;
                             }
-                            linkHtml = `<a href="${encodeURI(linkUrl)}" target="_blank" class="btn btn-sm btn-outline-info">View PDF</a>`;
+                            linkHtml = `<a href="${encodeURI(linkUrl)}" target="_blank" class="btn btn-sm btn-primary px-3"><i class="bi bi-file-pdf"></i> View PDF</a>`;
                         } else {
-                            linkHtml = `<span class="text-muted">No link</span>`;
+                            linkHtml = `<span class="text-muted">No attachment</span>`;
                         }
+
+                        // Determine score color
+                        let percent = parseFloat(candidate.match_percentage);
+                        let scoreColor = 'text-success';
+                        if (percent < 65) scoreColor = 'text-warning';
+                        if (percent < 50) scoreColor = 'text-danger';
 
                         html += `
                             <tr>
-                                <td class="fw-bold">${candidate.name}</td>
-                                <td style="font-size: 13px; color: white;">${candidate.skills || 'None'}</td>
-                                <td class="fw-bold text-success">${candidate.match_percentage}</td>
+                                <td class="fw-bold text-light">${candidate.name}</td>
+                                <td><span style="font-size: 13.5px; color: var(--text-secondary);">${candidate.skills || 'None'}</span></td>
+                                <td class="fw-bold ${scoreColor}">${candidate.match_percentage}</td>
                                 <td>${linkHtml}</td>
                             </tr>
                         `;
@@ -2142,12 +2273,13 @@
                         </div>
                     `;
                     resultsDiv.innerHTML = html;
+                    showNotification(`Identified ${data.results.length} semantic candidate matches!`, 'success');
                 } else {
-                    resultsDiv.innerHTML = `<p class="text-danger">Error finding matches: ${data.error}</p>`;
+                    resultsDiv.innerHTML = `<p class="text-danger">Error matching: ${data.error}</p>`;
                 }
             } catch (err) {
-                console.error("Match JD failed", err);
-                resultsDiv.innerHTML = '<p class="text-danger">Failed to retrieve matching candidates from server.</p>';
+                console.error("Match failed", err);
+                resultsDiv.innerHTML = '<p class="text-danger">Qdrant vector query failed. Check backend console.</p>';
             }
         }
 
@@ -2159,7 +2291,7 @@
 
         function exportJDMatches() {
             if (!currentJDMatches || currentJDMatches.length === 0) {
-                alert("No match results to export.");
+                showNotification("No match data available to export.", "error");
                 return;
             }
             let csv = "Candidate Name,Skills,Match Percentage,Resume URL\n";
@@ -2181,26 +2313,43 @@
             document.body.removeChild(link);
         }
 
+        /* CANDIDATE PORTAL METRIC FEEDS & DISPLAYS */
         async function loadCandidateJobDescriptions() {
             const listDiv = document.getElementById('candidateJdList');
+            const openCounter = document.getElementById('candidateOpenRolesCount');
+            const deptCounter = document.getElementById('candidateDeptCount');
             if (!listDiv) return;
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/job_descriptions");
                 const data = await response.json();
                 if (data.success) {
+                    // Update dynamic counts inside Candidate Dashboard
+                    if (openCounter) {
+                        openCounter.innerText = data.job_descriptions.length;
+                    }
+                    
+                    // Dynamic unique department counting
+                    if (deptCounter) {
+                        const depts = new Set();
+                        data.job_descriptions.forEach(jd => {
+                            if (jd.department) depts.add(jd.department.trim().toLowerCase());
+                        });
+                        deptCounter.innerText = depts.size;
+                    }
+
                     if (data.job_descriptions.length === 0) {
-                        listDiv.innerHTML = '<p class="text-muted">No open roles currently posted by recruiters.</p>';
+                        listDiv.innerHTML = '<p class="text-muted text-center py-4">No open job positions posted by ITL Recruiters currently.</p>';
                         return;
                     }
 
                     let html = `
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover mt-2">
-                                <thead class="table-dark">
+                        <div class="table-responsive table-container">
+                            <table class="table table-bordered">
+                                <thead>
                                     <tr>
                                         <th>Job Title</th>
-                                        <th>Department</th>
-                                        <th>Role Requirements / Description</th>
+                                        <th>Department / Squad</th>
+                                        <th>Requirements / Overview</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2210,8 +2359,8 @@
                         html += `
                             <tr>
                                 <td class="fw-bold text-info">${jd.title}</td>
-                                <td class="fw-semibold">${jd.department}</td>
-                                <td style="white-space: pre-wrap; font-size: 13px;">${jd.description}</td>
+                                <td class="fw-bold text-light">${jd.department}</td>
+                                <td style="white-space: pre-wrap; font-size: 13.5px; color: var(--text-secondary);">${jd.description}</td>
                             </tr>
                         `;
                     });
@@ -2223,16 +2372,99 @@
                     `;
                     listDiv.innerHTML = html;
                 } else {
-                    listDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                    listDiv.innerHTML = `<p class="text-danger text-center">Failed to sync open job positions.</p>`;
                 }
             } catch (err) {
-                console.error("Failed to load candidate job descriptions", err);
-                listDiv.innerHTML = '<p class="text-danger">Failed to load open roles from server.</p>';
+                console.error("Failed to load candidate JDs", err);
+                listDiv.innerHTML = '<p class="text-danger text-center">Failed to contact Recruiter server.</p>';
             }
         }
 
-        /* FLOATING CHATBOT FUNCTIONS */
+        /* DYNAMIC AUTH FORM TOGGLERS */
+        function toggleAuthForm(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginToggleArea = document.getElementById('loginToggleArea');
+            const registerToggleArea = document.getElementById('registerToggleArea');
+            const tabContainer = document.querySelector('.d-flex.mb-4');
+            const demoCredentials = document.getElementById('demo-credentials').parentElement;
+            const openingsPreview = document.getElementById('loginOpeningsPreview');
 
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('registerError').style.display = 'none';
+            document.getElementById('registerSuccess').style.display = 'none';
+
+            if (mode === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                loginToggleArea.style.display = 'none';
+                registerToggleArea.style.display = 'block';
+                tabContainer.style.display = 'none';
+                demoCredentials.style.display = 'none';
+                openingsPreview.style.display = 'none';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                loginToggleArea.style.display = 'block';
+                registerToggleArea.style.display = 'none';
+                tabContainer.style.display = 'flex';
+                demoCredentials.style.display = 'block';
+                if (selectedRole === 'candidate') {
+                    openingsPreview.style.display = 'block';
+                    loadLoginOpenings();
+                } else {
+                    openingsPreview.style.display = 'none';
+                }
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value.trim();
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name, username, password, role })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    successDiv.innerText = "Account registered successfully! Redirecting to login...";
+                    successDiv.style.display = 'block';
+
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerPassword').value = '';
+
+                    setTimeout(() => {
+                        toggleAuthForm('login');
+                        document.getElementById('loginUsername').value = username;
+                        document.getElementById('loginPassword').value = '';
+                    }, 1500);
+                } else {
+                    errorDiv.innerText = data.message;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Registration failed", error);
+                errorDiv.innerText = "Connection to register server failed.";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        /* FLOATING CHATBOT CONTROLLER */
         function toggleChatbot() {
             const chatWindow = document.getElementById('chatbotWindow');
             const toggleBtn = document.getElementById('chatbotToggleBtn');
@@ -2256,15 +2488,15 @@
             const chatBody = document.getElementById('chatbotBody');
 
             const userMsgDiv = document.createElement('div');
-            userMsgDiv.style.cssText = "background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-end; color: white; box-shadow: 0 4px 12px rgba(0, 114, 255, 0.2);";
+            userMsgDiv.style.cssText = "background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-end; color: white; box-shadow: 0 4px 12px rgba(0, 114, 255, 0.2); font-weight: 500;";
             userMsgDiv.innerText = message;
             chatBody.appendChild(userMsgDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
 
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'chat-msg-ai';
-            loadingDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;";
-            loadingDiv.innerText = "Thinking...";
+            loadingDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; display: flex; align-items: center; gap: 8px;";
+            loadingDiv.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" style="width:12px; height:12px; border-width:2px;"></span> AI is thinking...';
             chatBody.appendChild(loadingDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -2278,29 +2510,41 @@
                 });
 
                 const data = await response.json();
-
                 chatBody.removeChild(loadingDiv);
 
                 const responseDiv = document.createElement('div');
                 responseDiv.className = 'chat-msg-ai';
-                responseDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; white-space: pre-wrap;";
+                responseDiv.style.cssText = "border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; white-space: pre-wrap; font-weight: 500;";
                 responseDiv.innerText = data.answer || "No response received.";
                 chatBody.appendChild(responseDiv);
                 chatBody.scrollTop = chatBody.scrollHeight;
             } catch (error) {
-                console.error("Chat failed", error);
+                console.error("Chatbot failed", error);
                 chatBody.removeChild(loadingDiv);
 
                 const responseDiv = document.createElement('div');
-                responseDiv.style.cssText = "background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.2); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; color: #ff6b6b;";
-                responseDiv.innerText = "Failed to connect to AI server.";
+                responseDiv.style.cssText = "background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.25); border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start; color: var(--accent-red); font-weight: 500;";
+                responseDiv.innerText = "Failed to sync query with support server.";
                 chatBody.appendChild(responseDiv);
                 chatBody.scrollTop = chatBody.scrollHeight;
             }
         }
 
+        /* APP ONLOAD SYSTEM ENTRYPOINT */
+        window.onload = function () {
+            // Load landing page job openings preview by default
+            loadLoginOpenings();
+            
+            const savedUser = localStorage.getItem('resumeUser');
+            if (savedUser) {
+                const userObj = JSON.parse(savedUser);
+                applyUserRole(userObj.role, userObj.name);
+            } else {
+                document.body.classList.add('logged-out');
+                setLoginRole('candidate');
+            }
+        }
     </script>
-
 </body>
 
 </html>

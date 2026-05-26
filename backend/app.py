@@ -61,6 +61,7 @@ app.include_router(ai_router)
 from database import (
     get_user_by_username,
     create_user,
+    verify_password,
     save_message,
     get_all_messages,
     delete_message_by_id,
@@ -91,16 +92,10 @@ def login(request: LoginRequest):
     # Query user from PostgreSQL
     user_info = get_user_by_username(username)
 
-    # Automatically handle default login bypass if password is "password" for standard demo accounts
-    if not user_info and password == "password":
-        if username == "candidate":
-            user_info = {"username": "candidate", "role": "candidate", "name": "Candidate User"}
-        elif username == "official":
-            user_info = {"username": "official", "role": "official", "name": "Official Admin"}
-
     if user_info:
-        # Authenticate if password matches OR if the password provided is "password" (per requirements)
-        if user_info.get("password") == password or password == "password":
+        # Authenticate using bcrypt verification
+        stored_hash = user_info.get("password", "")
+        if verify_password(password, stored_hash):
             return {
                 "success": True,
                 "role": user_info["role"],
@@ -143,17 +138,12 @@ class EmailRequest(BaseModel):
 
 @app.post("/api/send_email")
 def send_email(request: EmailRequest):
-    email_id = str(uuid.uuid4())
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Save message to PostgreSQL instead of emails.json
+    # Save message to PostgreSQL — ID and timestamps handled by DB
     success = save_message(
-        email_id, 
         request.sender_name, 
         request.sender_email, 
         request.subject, 
-        request.message, 
-        timestamp
+        request.message
     )
     if success:
         return {"success": True, "message": "Email sent successfully."}
@@ -227,16 +217,13 @@ async def add_job_description(
             
             description = extracted_text
 
-        jd_id = str(uuid.uuid4())
-        created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success = save_job_description(
-            jd_id,
+        # ID and timestamps handled by the DB
+        jd_id = save_job_description(
             title,
             department,
-            description,
-            created_at
+            description
         )
-        if success:
+        if jd_id:
             return {"success": True, "message": "Job description saved successfully.", "id": jd_id}
         else:
             return {"success": False, "message": "Failed to save job description."}
@@ -265,7 +252,7 @@ def match_job_description(jd_id: str):
         jds = get_all_job_descriptions()
         jd = None
         for item in jds:
-            if item["id"] == jd_id:
+            if str(item["id"]) == jd_id:
                 jd = item
                 break
         
