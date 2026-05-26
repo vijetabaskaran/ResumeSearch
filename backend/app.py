@@ -45,6 +45,8 @@ app.add_middleware(
 # INCLUDE ROUTERS
 # ==========================================
 
+
+
 app.include_router(insert_router)
 app.include_router(search_router)
 app.include_router(count_router)
