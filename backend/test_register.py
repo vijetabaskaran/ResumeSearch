@@ -4,7 +4,8 @@ payload = {
     "username": "candidate1",
     "password": "testpass",
     "role": "candidate",
-    "name": "Candidate One"
+    "name": "Candidate One",
+    "email": "candidate1@example.com"
 }
 headers = {'Content-Type': 'application/json'}
 resp = requests.post(url, json=payload, headers=headers)

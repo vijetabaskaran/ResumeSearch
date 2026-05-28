@@ -1,133 +1,22 @@
 from fastapi import APIRouter
-from qdrant import client, collection_name, embedding_model
+
+from services.search_service import public_search_results, search_candidates
+
 
 router = APIRouter()
 
+
 @router.get("/search_resume")
 def search_resume(skill: str):
-
+    print(f"\n[API GET] /search_resume called with skill query: '{skill}'")
     try:
-
-        print("\n========== SEARCH RESUME API ==========")
-
-        print("Skill Received:")
-        print(skill)
-
-        # ==========================================
-        # CREATE QUERY EMBEDDING
-        # ==========================================
-
-        print("\nCreating embedding for search skill...")
-
-        query_embedding = embedding_model.encode(
-            skill
-        ).tolist()
-
-        print("Embedding Created Successfully")
-
-        # ==========================================
-        # SEARCH ALL MATCHING RESUMES
-        # ==========================================
-
-        print("\nSearching resumes from Qdrant...")
-
-        search_result = client.query_points(
-
-            collection_name=collection_name,
-
-            query=query_embedding,
-
-            using="skills",
-
-            limit=20
-
+        matches = search_candidates(
+            query_text=skill,
+            limit=20,
+            required_skill=skill
         )
-
-        print("Search Completed")
-
-        # ==========================================
-        # SCORE THRESHOLD
-        # ==========================================
-
-        THRESHOLD_SCORE = 0.0  # lowered to include all matches
-
-        print(f"\nThreshold Score: {THRESHOLD_SCORE}")
-
-        matched_resumes = []
-
-        searched_skill = skill.lower().strip()
-        for point in search_result.points:
-
-            stored_skills = point.payload.get(
-                "skills",
-                ""
-            ).lower()
-
-            score = point.score
-
-            print("\nCandidate:")
-            print(point.payload.get("name"))
-
-            print("Stored Skills:")
-            print(stored_skills)
-
-            print("Score:")
-            print(score)
-
-            # ==========================================
-            # EXACT SKILL + THRESHOLD FILTER
-            # ==========================================
-
-            if searched_skill in stored_skills and score >= 0.5:
-                match_percentage = max(0.0, min(100.0, round(score * 100, 1)))
-                matched_resumes.append({
-
-                    "name": point.payload.get("name"),
-
-                    "resume_url": point.payload.get("resume_url"),
-
-                    "skills": point.payload.get("skills"),
-
-                    "match_percentage": f"{match_percentage}%",
-
-                    "score": round(score, 4)
-
-                })
-
-        # ==========================================
-        # NO MATCH FOUND (handled after sorting)
-        # ==========================================
-
-        # If no resumes meet the threshold, we still want to return an empty list after sorting.
-        # Sorting will be performed below regardless of count.
-
-        # ==========================================
-        # SORT BY SCORE DESCENDING
-        # ==========================================
-
-        matched_resumes = sorted(
-            matched_resumes,
-            key=lambda x: x["score"],
-            reverse=True
-        )
-
-        print("\nFinal Matching Candidates:")
-        print(matched_resumes)
-
-        print("\n========== SEARCH FINISHED ==========\n")
-
-        return {
-            "results": matched_resumes
-        }
-
+        print(f"[API GET] /search_resume succeeded. Returning {len(matches)} results.")
+        return {"results": public_search_results(matches)}
     except Exception as e:
-
-        print("\nSEARCH ERROR:")
-        print(str(e))
-
-        return {
-
-            "error": str(e)
-
-        }
-    
+        print("[API GET ERROR] /search_resume failed:", str(e))
+        return {"error": str(e)}

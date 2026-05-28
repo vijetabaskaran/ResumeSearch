@@ -1,0 +1,56 @@
+﻿<!-- =======================================
+                         G. CANDIDATE RESUME UPLOAD PAGE
+                         ======================================= -->
+                    <div id="candidate-upload-page" class="page">
+                        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                            <h2 class="section-title fw-bold text-light mb-2"><i class="bi bi-cloud-arrow-up text-info me-2"></i>Resume Upload</h2>
+                            <p class="text-secondary mb-4">
+                                Get your resume indexed with our advanced AI. Upload your resume as a PDF file or provide a PDF URL link.
+                            </p>
+
+                            <form id="resumeForm">
+                                <div class="mb-4">
+                                    <label class="form-label">Candidate Name</label>
+                                    <input type="text" class="form-control" id="candidateName" placeholder="Enter your full name" required />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label d-block">Upload Method</label>
+                                    <div class="d-flex gap-4 mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="uploadMethod" id="methodFile" value="file" checked onchange="toggleUploadMethod('file')">
+                                            <label class="form-check-label" for="methodFile" style="cursor: pointer; color: var(--text-secondary);">
+                                                PDF File Upload
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="uploadMethod" id="methodUrl" value="url" onchange="toggleUploadMethod('url')">
+                                            <label class="form-check-label" for="methodUrl" style="cursor: pointer; color: var(--text-secondary);">
+                                                PDF URL Link
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4" id="fileInputGroup">
+                                    <label class="form-label">Select PDF File</label>
+                                    <input type="file" class="form-control" id="resumeFile" accept=".pdf" />
+                                </div>
+
+                                <div class="mb-4" id="urlInputGroup" style="display: none;">
+                                    <label class="form-label">Resume PDF URL</label>
+                                    <input type="url" class="form-control" id="resumeUrl" placeholder="Enter PDF URL (e.g. https://example.com/resume.pdf)" />
+                                </div>
+
+                                <!-- Dynamic alert message (Fix for the successMessage bug) -->
+                                <div id="uploadLoader" style="display: none;" class="mb-3 text-info fw-bold">
+                                    <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
+                                    AI is analyzing your resume and extracting skills... Please wait...
+                                </div>
+
+                                <button type="button" class="btn btn-primary w-100 py-3" onclick="uploadResume()">
+                                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload & Process Resume
+                                </button>
+                            </form>
+                        </div>
+                    </div>

@@ -1,0 +1,35 @@
+﻿<!-- =======================================
+                         I. SETTINGS PAGE (ALL USERS)
+                         ======================================= -->
+                    <div id="settings" class="page">
+                        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                            <h2 class="section-title fw-bold text-light mb-4"><i class="bi bi-gear-fill text-info me-2"></i>Portal Settings</h2>
+                            
+                            <div class="mb-4 pb-4 border-bottom border-secondary">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-palette text-info me-2"></i>Theme Optimization</h5>
+                                <p class="text-secondary mb-3">Adjust the visual aesthetics of the portal platform.</p>
+                                <select class="form-select" onchange="changeTheme(this.value)">
+                                    <option value="dark" selected>Dark Mode (Sleek Glassmorphic)</option>
+                                    <option value="light">Light Mode (Clean Harmonized)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-info me-2"></i>Core Environment Details</h5>
+                                <div class="p-3 rounded" style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); font-size: 13.5px;">
+                                    <div class="row mb-2">
+                                        <div class="col-md-4 text-secondary">Framework Version:</div>
+                                        <div class="col-md-8 text-light fw-semibold">FastAPI v0.100.0 / Web UI v2.5.0</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4 text-secondary">Database:</div>
+                                        <div class="col-md-8 text-light fw-semibold">PostgreSQL Core Active</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 text-secondary">Search Engine:</div>
+                                        <div class="col-md-8 text-light fw-semibold">Qdrant Vector Database Connected</div>
+                        </div>
+                    </div>
+                    </div>
+                            </div>
+                        </div>

@@ -9,7 +9,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get database connection URL from environment variables
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/resumesearch")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:psqlpassword@localhost:5432/resumesearch")
+DEFAULT_ADMIN_USERNAME = os.getenv("DEFAULT_ADMIN_USERNAME", "official").lower().strip()
+DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD", "Admin@123")
+DEFAULT_ADMIN_EMAIL = os.getenv("DEFAULT_ADMIN_EMAIL", "official@idealtechlabs.com")
 
 # ==========================================
 # PASSWORD HASHING UTILITIES
@@ -30,25 +33,14 @@ def verify_password(password: str, hashed: str) -> bool:
 # IN-MEMORY FALLBACK STORAGE
 # ==========================================
 # Ensures the app works even if PostgreSQL is offline.
-
-_DEMO_HASH = hash_password("password")
+# No default accounts — all users must register.
 
 _FALLBACK_USERS = {
-    "candidate": {
+    DEFAULT_ADMIN_USERNAME: {
         "id": str(uuid.uuid4()),
-        "username": "candidate",
-        "password": _DEMO_HASH,
-        "role": "candidate",
-        "name": "Candidate User",
-        "created_at": datetime.now().isoformat(),
-        "updated_at": datetime.now().isoformat(),
-        "is_deleted": False,
-        "deleted_at": None
-    },
-    "official": {
-        "id": str(uuid.uuid4()),
-        "username": "official",
-        "password": _DEMO_HASH,
+        "username": DEFAULT_ADMIN_USERNAME,
+        "email": DEFAULT_ADMIN_EMAIL,
+        "password": hash_password(DEFAULT_ADMIN_PASSWORD),
         "role": "official",
         "name": "Official Admin",
         "created_at": datetime.now().isoformat(),
@@ -58,6 +50,7 @@ _FALLBACK_USERS = {
     }
 }
 _FALLBACK_MESSAGES = []
+_FALLBACK_REPLIES = []
 _FALLBACK_JD = []
 
 # ==========================================
@@ -103,7 +96,7 @@ def _serialize_rows(rows):
 # ==========================================
 
 def init_db():
-    """Initialize database tables and seed data using db_setup.sql."""
+    """Initialize database tables using db_setup.sql."""
     print("Initializing PostgreSQL Database...")
     sql_file_path = os.path.join(os.path.dirname(__file__), "db_setup.sql")
 
@@ -121,6 +114,25 @@ def init_db():
             with open(sql_file_path, "r") as f:
                 sql_script = f.read()
             cursor.execute(sql_script)
+            cursor.execute(
+                """
+                INSERT INTO users (username, email, password, role, name)
+                VALUES (%s, %s, %s, 'official', 'Official Admin')
+                ON CONFLICT (username) DO UPDATE
+                SET email = EXCLUDED.email,
+                    password = EXCLUDED.password,
+                    role = 'official',
+                    name = 'Official Admin',
+                    is_deleted = FALSE,
+                    deleted_at = NULL,
+                    updated_at = NOW()
+                """,
+                (
+                    DEFAULT_ADMIN_USERNAME,
+                    DEFAULT_ADMIN_EMAIL,
+                    hash_password(DEFAULT_ADMIN_PASSWORD)
+                )
+            )
         conn.close()
         print("PostgreSQL Database initialized successfully.")
     except Exception as e:
@@ -164,8 +176,8 @@ def get_user_by_username(username):
         if conn:
             conn.close()
 
-def create_user(username, password, role, name):
-    """Insert a new user with a bcrypt-hashed password."""
+def create_user(username, password, role, name, email=""):
+    """Insert a new user with a bcrypt-hashed password and email."""
     conn = None
     username_clean = username.lower().strip()
     hashed = hash_password(password)
@@ -175,6 +187,7 @@ def create_user(username, password, role, name):
             _FALLBACK_USERS[username_clean] = {
                 "id": str(uuid.uuid4()),
                 "username": username_clean,
+                "email": email,
                 "password": hashed,
                 "role": role,
                 "name": name,
@@ -187,8 +200,8 @@ def create_user(username, password, role, name):
         conn.autocommit = True
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
-                (username_clean, hashed, role, name)
+                "INSERT INTO users (username, email, password, role, name) VALUES (%s, %s, %s, %s, %s)",
+                (username_clean, email, hashed, role, name)
             )
             return True
     except Exception as e:
@@ -196,6 +209,7 @@ def create_user(username, password, role, name):
         _FALLBACK_USERS[username_clean] = {
             "id": str(uuid.uuid4()),
             "username": username_clean,
+            "email": email,
             "password": hashed,
             "role": role,
             "name": name,
@@ -213,7 +227,7 @@ def create_user(username, password, role, name):
 # MESSAGE HELPERS
 # ==========================================
 
-def save_message(sender_name, sender_email, subject, message):
+def save_message(sender_name, sender_email, subject, message, sender_username=""):
     """Insert a message record. ID and timestamps are handled by the DB."""
     conn = None
     fallback_id = str(uuid.uuid4())
@@ -221,6 +235,7 @@ def save_message(sender_name, sender_email, subject, message):
         "id": fallback_id,
         "sender_name": sender_name,
         "sender_email": sender_email,
+        "sender_username": sender_username,
         "subject": subject,
         "message": message,
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -236,8 +251,8 @@ def save_message(sender_name, sender_email, subject, message):
         conn.autocommit = True
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO messages (sender_name, sender_email, subject, message) VALUES (%s, %s, %s, %s)",
-                (sender_name, sender_email, subject, message)
+                "INSERT INTO messages (sender_name, sender_email, sender_username, subject, message) VALUES (%s, %s, %s, %s, %s)",
+                (sender_name, sender_email, sender_username, subject, message)
             )
             return True
     except Exception as e:
@@ -295,6 +310,107 @@ def delete_message_by_id(message_id):
                 m["is_deleted"] = True
                 m["deleted_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return True
+    finally:
+        if conn:
+            conn.close()
+
+# ==========================================
+# REPLY HELPERS
+# ==========================================
+
+def save_reply(message_id, sender_username, reply_text):
+    """Insert a reply to a specific message. Returns the reply ID or None."""
+    conn = None
+    fallback_id = str(uuid.uuid4())
+    new_reply = {
+        "id": fallback_id,
+        "message_id": message_id,
+        "sender_username": sender_username,
+        "reply_text": reply_text,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "is_deleted": False
+    }
+    try:
+        conn = get_connection()
+        if not conn:
+            _FALLBACK_REPLIES.append(new_reply)
+            return fallback_id
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO replies (message_id, sender_username, reply_text) VALUES (%s, %s, %s) RETURNING id",
+                (message_id, sender_username, reply_text)
+            )
+            row = cursor.fetchone()
+            return str(row[0]) if row else fallback_id
+    except Exception as e:
+        print(f"Error saving reply (using fallback): {e}")
+        _FALLBACK_REPLIES.append(new_reply)
+        return fallback_id
+    finally:
+        if conn:
+            conn.close()
+
+def get_replies_for_user(username):
+    """Retrieve all replies directed to messages sent by a specific candidate username."""
+    conn = None
+    username_clean = username.lower().strip()
+    try:
+        conn = get_connection()
+        if not conn:
+            # Fallback: find message IDs for this user, then find replies
+            user_msg_ids = {m["id"] for m in _FALLBACK_MESSAGES
+                           if m.get("sender_username", "").lower() == username_clean
+                           and not m.get("is_deleted", False)}
+            replies = [r for r in _FALLBACK_REPLIES
+                       if r["message_id"] in user_msg_ids and not r.get("is_deleted", False)]
+            return list(reversed(replies))
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                """
+                SELECT r.*, m.subject AS original_subject, m.message AS original_message
+                FROM replies r
+                JOIN messages m ON r.message_id = m.id
+                WHERE LOWER(m.sender_username) = %s
+                  AND r.is_deleted = FALSE
+                  AND m.is_deleted = FALSE
+                ORDER BY r.created_at DESC
+                """,
+                (username_clean,)
+            )
+            return _serialize_rows(cursor.fetchall())
+    except Exception as e:
+        print(f"Error getting replies for user (using fallback): {e}")
+        user_msg_ids = {m["id"] for m in _FALLBACK_MESSAGES
+                       if m.get("sender_username", "").lower() == username_clean
+                       and not m.get("is_deleted", False)}
+        replies = [r for r in _FALLBACK_REPLIES
+                   if r["message_id"] in user_msg_ids and not r.get("is_deleted", False)]
+        return list(reversed(replies))
+    finally:
+        if conn:
+            conn.close()
+
+def get_replies_for_message(message_id):
+    """Retrieve all non-deleted replies for a specific message."""
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            replies = [r for r in _FALLBACK_REPLIES
+                       if r["message_id"] == message_id and not r.get("is_deleted", False)]
+            return replies
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                "SELECT * FROM replies WHERE message_id = %s AND is_deleted = FALSE ORDER BY created_at ASC",
+                (message_id,)
+            )
+            return _serialize_rows(cursor.fetchall())
+    except Exception as e:
+        print(f"Error getting replies for message (using fallback): {e}")
+        replies = [r for r in _FALLBACK_REPLIES
+                   if r["message_id"] == message_id and not r.get("is_deleted", False)]
+        return replies
     finally:
         if conn:
             conn.close()

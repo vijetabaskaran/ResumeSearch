@@ -1,0 +1,34 @@
+﻿<!-- FLOATING CHATBOT WIDGET -->
+    <div id="floatingChatbot" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <!-- Chat Toggle Button -->
+        <button id="chatbotToggleBtn" onclick="toggleChatbot()"
+            style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(175deg, #0072ff 0%, #00c6ff 100%); border: none; box-shadow: 0 8px 32px rgba(0, 114, 255, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="chatbotWindow" class="glass-card"
+            style="display: none; width: 380px; height: 500px; position: absolute; bottom: 80px; right: 0; border-radius: 20px; flex-direction: column; overflow: hidden; padding: 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15);">
+            <div style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0; font-weight: 700; color: white;"><i class="bi bi-robot me-2"></i>AI Support Chat</h5>
+                <button onclick="toggleChatbot()" style="background: none; border: none; color: white; cursor: pointer; padding: 0; font-size: 20px;">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;" id="chatbotBody">
+                <div class="chat-msg-ai" style="border-radius: 12px; padding: 12px; font-size: 14px; max-width: 85%; align-self: flex-start;">
+                    Hello! I'm your AI Recruitment Assistant. Ask me anything about job roles, resumes, or portal operations!
+                </div>
+            </div>
+
+            <div style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.25); display: flex; gap: 10px;">
+                <input type="text" id="chatbotInput" class="form-control" placeholder="Type your question..." onkeydown="if(event.key === 'Enter') sendChatbotMessage()" style="padding: 10px 15px; font-size: 14px; flex: 1; border-radius: 10px;">
+                <button class="btn btn-primary" onclick="sendChatbotMessage()" style="padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
