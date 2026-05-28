@@ -38,7 +38,7 @@
                     data.forEach(email => {
                         html += `
                             <tr id="email-row-${email.id}">
-                                <td style="font-size: 13px; color: var(--text-secondary); min-width: 140px;">${email.timestamp || ''}</td>
+                                <td style="font-size: 13px; color: var(--text-secondary); min-width: 140px;">${email.created_at || ''}</td>
                                 <td>
                                     <div class="fw-bold text-light">${email.sender_name}</div>
                                     <div style="font-size: 12px; color: var(--text-secondary);">${email.sender_email}</div>

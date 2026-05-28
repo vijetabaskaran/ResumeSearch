@@ -1,7 +1,8 @@
-﻿<!-- =======================================
+<!-- =======================================
                          H. CANDIDATE MESSAGE SUPPORT PAGE
                          ======================================= -->
                     <div id="candidate-support-page" class="page">
+                        <!-- Contact Form -->
                         <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
                             <h2 class="section-title fw-bold text-light mb-2"><i class="bi bi-envelope text-info me-2"></i>Contact Recruitment / Support</h2>
                             <p class="text-secondary mb-4">
@@ -20,5 +21,18 @@
                                     <i class="bi bi-send me-2"></i> Send Message to HR
                                 </button>
                             </form>
+                        </div>
+
+                        <!-- My Messages & Recruiter Replies -->
+                        <div class="glass-card mt-4" style="max-width: 800px; margin: 16px auto 0;">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h4 class="fw-bold text-light m-0"><i class="bi bi-chat-left-dots-fill text-info me-2"></i>My Messages &amp; Recruiter Replies</h4>
+                                <button class="btn btn-sm btn-outline-info" onclick="loadSupportReplies()" style="border-radius: 8px; font-size: 12px; padding: 5px 12px;">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                                </button>
+                            </div>
+                            <div id="supportRepliesList">
+                                <p class="text-muted text-center py-3">Loading your conversation history...</p>
+                            </div>
                         </div>
                     </div>

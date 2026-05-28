@@ -55,20 +55,27 @@
                             </div>
                         </div>
 
-                        <!-- System Overview / Quick Actions panel -->
+                        <!-- System Overview: Recent Activity + Quick Actions -->
                         <div class="row">
+                            <!-- Recent Recruitment Activity Feed -->
                             <div class="col-md-7 mb-4">
                                 <div class="glass-card h-100">
-                                    <h4 class="fw-bold text-light mb-4"><i class="bi bi-cpu-fill text-info me-2"></i>Smart AI Recruitment Core</h4>
-                                    <p class="text-secondary mb-3">You are logged in as an <strong>Official</strong>. The platform is connected and running with the following models:</p>
-                                    <ul class="list-unstyled d-flex flex-column gap-3 text-secondary" style="font-size: 14.5px;">
-                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>Groq AI Llama 3.3 (70B) skill extractor loaded</li>
-                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>MiniLM Embedding model initialized</li>
-                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>Qdrant collection <strong>resumes3</strong> connected</li>
-                                        <li><i class="bi bi-check-circle-fill text-info me-2"></i>PostgreSQL user database active</li>
-                                    </ul>
+                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <h4 class="fw-bold text-light m-0"><i class="bi bi-activity text-info me-2"></i>Recent Recruitment Activity</h4>
+                                        <button class="btn btn-sm btn-outline-info" onclick="loadRecentActivity()" style="border-radius: 8px; font-size: 12px; padding: 5px 12px;">
+                                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                                        </button>
+                                    </div>
+                                    <div id="recentActivityFeed">
+                                        <div class="d-flex align-items-center gap-2 text-secondary py-2">
+                                            <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+                                            Loading activity...
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Quick Actions (unchanged) -->
                             <div class="col-md-5 mb-4">
                                 <div class="glass-card h-100 d-flex flex-column justify-content-between">
                                     <div>
@@ -82,8 +89,31 @@
                                         <button class="btn btn-success w-100 justify-content-center text-center py-2.5" onclick="showPage('resumes-page')">
                                             <i class="bi bi-search me-2"></i> Search Candidate Resumes
                                         </button>
+                                        <button class="btn btn-sm w-100 justify-content-center text-center py-2.5" onclick="showPage('messages-page')" style="background: rgba(255,190,50,0.12); border: 1px solid rgba(255,190,50,0.3); color: #ffbe32; border-radius: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-envelope-paper me-2"></i> View Candidate Messages
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Published FAQs Management Panel -->
+                        <div class="glass-card mt-2 mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h4 class="fw-bold text-light m-0"><i class="bi bi-patch-question-fill text-warning me-2"></i>Published FAQs</h4>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="officialFaqCount" class="badge" style="background: rgba(255,190,50,0.15); color: #ffbe32; border: 1px solid rgba(255,190,50,0.25); border-radius: 8px; font-size: 12px;">0 entries</span>
+                                    <button class="btn btn-sm" onclick="loadOfficialFaqs()" style="background: rgba(255,190,50,0.1); border: 1px solid rgba(255,190,50,0.25); color: #ffbe32; border-radius: 8px; font-size: 12px; padding: 5px 12px;">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="officialFaqList">
+                                <div class="d-flex align-items-center gap-2 text-secondary py-2">
+                                    <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                                    Loading published FAQs...
+                                </div>
+                            </div>
+                        </div>
                     </div>
+

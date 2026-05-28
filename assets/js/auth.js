@@ -227,6 +227,8 @@ function applyUserRole(role, name) {
         loadOfficialResumes();
         loadOfficialEmails();
         loadJobDescriptions();
+        loadRecentActivity();
+        loadOfficialFaqs();
 
         // Route directly to dashboard
         showPage('official-dashboard-page');
@@ -238,7 +240,7 @@ function applyUserRole(role, name) {
             <button id="btn-candidate-upload-page" onclick="showPage('candidate-upload-page')">
                 <i class="bi bi-cloud-arrow-up"></i> Upload My Resume
             </button>
-            <button id="btn-candidate-support-page" onclick="showPage('candidate-support-page')">
+            <button id="btn-candidate-support-page" onclick="showPage('candidate-support-page'); loadSupportReplies();">
                 <i class="bi bi-envelope"></i> Contact Recruiter
             </button>
             <button id="btn-candidate-faq-page" onclick="showPage('candidate-faq-page'); loadFaqEntries();">

@@ -72,3 +72,12 @@ CREATE TABLE IF NOT EXISTS job_descriptions (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP
 );
+
+-- Append-only recruitment activity log (no soft-delete)
+CREATE TABLE IF NOT EXISTS activities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    activity_type VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    performed_by VARCHAR(100) NOT NULL DEFAULT 'system',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

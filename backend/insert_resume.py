@@ -3,6 +3,7 @@ from qdrant_client.models import PointStruct
 from qdrant import client, collection_name, embedding_model
 from ai_model import groq_client
 from services.upload_service import handle_upload
+from database import log_activity
 
 import uuid
 
@@ -181,6 +182,9 @@ Resume:
 
         print("Resume Stored Successfully")
 
+        # Log recruitment activity
+        log_activity("resume_uploaded", f"New resume uploaded for candidate: {name}", name)
+
         print("===================================\n")
 
         return {
@@ -205,4 +209,3 @@ Resume:
         return {
             "error": str(e)
         }
-    

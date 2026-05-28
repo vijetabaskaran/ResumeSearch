@@ -829,3 +829,308 @@
             background: rgba(245, 158, 11, 0.05) !important;
         }
 
+        /* ============================================================
+           ACTIVITY FEED — Official Dashboard
+           ============================================================ */
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 14px;
+            padding-bottom: 16px;
+        }
+
+        .activity-item--last {
+            padding-bottom: 0;
+        }
+
+        .activity-dot-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            width: 28px;
+        }
+
+        .activity-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .activity-item:hover .activity-dot {
+            transform: scale(1.15);
+        }
+
+        .activity-line {
+            width: 2px;
+            flex: 1;
+            background: var(--glass-border);
+            margin-top: 4px;
+            min-height: 16px;
+            border-radius: 1px;
+        }
+
+        .activity-body {
+            flex: 1;
+            min-width: 0;
+            padding-top: 3px;
+        }
+
+        .activity-label-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .activity-type-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 5px;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .activity-message {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .activity-by {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        body.light-mode .activity-message {
+            color: #1e293b;
+        }
+
+        body.light-mode .activity-line {
+            background: rgba(0,0,0,0.08);
+        }
+
+        /* ============================================================
+           FAQ MANAGEMENT CARDS — Official Dashboard
+           ============================================================ */
+        .faq-manage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-manage-card {
+            background: rgba(255, 190, 50, 0.04);
+            border: 1px solid rgba(255, 190, 50, 0.18);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .faq-manage-card:hover {
+            border-color: rgba(255, 190, 50, 0.35);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .faq-manage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 190, 50, 0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .faq-manage-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .faq-manage-subject {
+            font-weight: 700;
+            color: #ffbe32;
+        }
+
+        .faq-manage-date,
+        .faq-manage-by {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .faq-manage-delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .faq-manage-delete-btn:hover {
+            background: rgba(239, 68, 68, 0.85);
+            color: white;
+            border-color: transparent;
+        }
+
+        .faq-manage-body {
+            padding: 12px 16px;
+        }
+
+        .faq-manage-q,
+        .faq-manage-a {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .faq-manage-label {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 5px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .faq-label-q {
+            background: rgba(0, 198, 255, 0.15);
+            color: #00c6ff;
+            border: 1px solid rgba(0, 198, 255, 0.25);
+        }
+
+        .faq-label-a {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .faq-manage-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .faq-answer-text {
+            color: #e2e8f0;
+        }
+
+        body.light-mode .faq-manage-card {
+            background: rgba(245, 158, 11, 0.03);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        body.light-mode .faq-manage-text {
+            color: #475569;
+        }
+
+        body.light-mode .faq-answer-text {
+            color: #1e293b;
+        }
+
+        /* ============================================================
+           SUPPORT PAGE — Conversation Timeline
+           ============================================================ */
+        .support-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .support-timeline-item {
+            border-left: 3px solid rgba(0, 198, 255, 0.2);
+            padding-left: 16px;
+        }
+
+        .support-msg-block {
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .support-msg-candidate {
+            background: rgba(0, 198, 255, 0.05);
+            border: 1px solid rgba(0, 198, 255, 0.12);
+        }
+
+        .support-msg-official {
+            background: rgba(74, 222, 128, 0.04);
+            border: 1px solid rgba(74, 222, 128, 0.12);
+        }
+
+        .support-msg-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .support-msg-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .support-msg-body {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .support-reply-body {
+            color: #e2e8f0;
+        }
+
+        body.light-mode .support-msg-candidate {
+            background: rgba(0, 114, 255, 0.04);
+            border-color: rgba(0, 114, 255, 0.1);
+        }
+
+        body.light-mode .support-msg-official {
+            background: rgba(22, 163, 74, 0.03);
+            border-color: rgba(22, 163, 74, 0.1);
+        }
+
+        body.light-mode .support-msg-body {
+            color: #475569;
+        }
+
+        body.light-mode .support-reply-body {
+            color: #1e293b;
+        }
+

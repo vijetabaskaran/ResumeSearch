@@ -96,7 +96,10 @@ from database import (
     save_reply,
     get_replies_for_user,
     get_replies_for_message,
-    get_faq_entries
+    get_faq_entries,
+    log_activity,
+    get_recent_activities,
+    delete_faq_by_id
 )
 
 
@@ -206,6 +209,7 @@ def register(request: RegisterRequest):
     # Always register as candidate — role is not user-controlled
     success = create_user(username, request.password, "candidate", request.name, request.email.strip())
     if success:
+        log_activity("candidate_registered", f"New candidate registered: {username}", username)
         return {"success": True, "message": "Account registered successfully."}
     else:
         return {"success": False, "message": "Failed to register user."}
@@ -227,13 +231,18 @@ class EmailRequest(BaseModel):
 def send_email(request: EmailRequest):
     # Save message to PostgreSQL with sender_username linkage
     success = save_message(
-        request.sender_name, 
-        request.sender_email, 
-        request.subject, 
+        request.sender_name,
+        request.sender_email,
+        request.subject,
         request.message,
         request.sender_username
     )
     if success:
+        log_activity(
+            "message_sent",
+            f"Candidate message received: \u201c{request.subject[:60]}\u201d from {request.sender_name}",
+            request.sender_username or request.sender_name
+        )
         return {"success": True, "message": "Email sent successfully."}
     else:
         return {"success": False, "message": "Failed to send email."}
@@ -280,6 +289,17 @@ def create_reply(request: ReplyRequest, http_request: Request):
         request.is_faq
     )
     if reply_id:
+        log_activity(
+            "reply_sent",
+            f"Official replied to a candidate message (by {request.sender_username})",
+            request.sender_username
+        )
+        if request.is_faq:
+            log_activity(
+                "faq_posted",
+                f"New FAQ published by {request.sender_username}",
+                request.sender_username
+            )
         return {"success": True, "message": "Reply sent successfully.", "id": reply_id, "is_faq": request.is_faq}
     else:
         return {"success": False, "message": "Failed to send reply."}
@@ -300,6 +320,28 @@ def get_faq():
     """
     faqs = get_faq_entries()
     return {"success": True, "faqs": faqs}
+
+@app.delete("/api/faq/{faq_id}")
+def remove_faq(faq_id: str, request: Request):
+    """Official-only: unpublish a FAQ entry.
+    
+    Sets is_faq=FALSE and is_deleted=TRUE on the reply row — the reply stays
+    visible to the original candidate privately but disappears from GET /api/faq.
+    """
+    require_official(request)
+    success = delete_faq_by_id(faq_id)
+    if success:
+        log_activity("faq_deleted", f"FAQ entry unpublished by admin", "official")
+        return {"success": True, "message": "FAQ entry removed successfully."}
+    else:
+        return {"success": False, "message": "FAQ entry not found."}
+
+@app.get("/api/activities")
+def get_activities(request: Request):
+    """Official-only: fetch the latest 10 recruitment activity log entries."""
+    require_official(request)
+    activities = get_recent_activities(limit=10)
+    return {"success": True, "activities": activities}
 
 # ==========================================
 # JOB DESCRIPTIONS
@@ -345,6 +387,7 @@ async def add_job_description(
             description
         )
         if jd_id:
+            log_activity("jd_created", f"New job description created: \u201c{title}\u201d ({department})", "official")
             return {"success": True, "message": "Job description saved successfully.", "id": jd_id}
         else:
             return {"success": False, "message": "Failed to save job description."}

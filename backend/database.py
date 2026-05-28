@@ -52,6 +52,7 @@ _FALLBACK_USERS = {
 _FALLBACK_MESSAGES = []
 _FALLBACK_REPLIES = []
 _FALLBACK_JD = []
+_FALLBACK_ACTIVITIES = []
 
 # ==========================================
 # DATABASE CONNECTION
@@ -577,6 +578,103 @@ def delete_job_description_by_id(jd_id):
             if j["id"] == jd_id:
                 j["is_deleted"] = True
                 j["deleted_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return True
+    finally:
+        if conn:
+            conn.close()
+
+# ==========================================
+# ACTIVITY LOG HELPERS
+# ==========================================
+
+def log_activity(activity_type: str, message: str, performed_by: str = "system") -> None:
+    """Append a recruitment activity record. Silently swallows all errors so
+    this call never interrupts the caller's main operation."""
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            _FALLBACK_ACTIVITIES.append({
+                "id": str(uuid.uuid4()),
+                "activity_type": activity_type,
+                "message": message,
+                "performed_by": performed_by,
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            })
+            return
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO activities (activity_type, message, performed_by) VALUES (%s, %s, %s)",
+                (activity_type, message, performed_by)
+            )
+    except Exception as e:
+        print(f"[Activity Log Warning] Could not write activity '{activity_type}': {e}")
+        try:
+            _FALLBACK_ACTIVITIES.append({
+                "id": str(uuid.uuid4()),
+                "activity_type": activity_type,
+                "message": message,
+                "performed_by": performed_by,
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            })
+        except Exception:
+            pass
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
+def get_recent_activities(limit: int = 10) -> list:
+    """Retrieve the most recent recruitment activities, newest first."""
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            return list(reversed(_FALLBACK_ACTIVITIES))[:limit]
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                "SELECT * FROM activities ORDER BY created_at DESC LIMIT %s",
+                (limit,)
+            )
+            return _serialize_rows(cursor.fetchall())
+    except Exception as e:
+        print(f"Error fetching recent activities (using fallback): {e}")
+        return list(reversed(_FALLBACK_ACTIVITIES))[:limit]
+    finally:
+        if conn:
+            conn.close()
+
+
+def delete_faq_by_id(faq_id: str) -> bool:
+    """Unpublish a FAQ entry: sets is_faq=FALSE and is_deleted=TRUE on the reply.
+    The reply remains visible to the original candidate via their private feed
+    but is removed from the public GET /api/faq endpoint."""
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            for r in _FALLBACK_REPLIES:
+                if r["id"] == faq_id:
+                    r["is_faq"] = False
+                    r["is_deleted"] = True
+            return True
+        conn.autocommit = True
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "UPDATE replies SET is_faq = FALSE, is_deleted = TRUE WHERE id = %s",
+                (faq_id,)
+            )
+            return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Error unpublishing FAQ (using fallback): {e}")
+        for r in _FALLBACK_REPLIES:
+            if r["id"] == faq_id:
+                r["is_faq"] = False
+                r["is_deleted"] = True
         return True
     finally:
         if conn:
