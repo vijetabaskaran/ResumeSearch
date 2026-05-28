@@ -1,4 +1,4 @@
-﻿/* JOB DESCRIPTION MANAGEMENT FUNCTIONS */
+/* JOB DESCRIPTION MANAGEMENT FUNCTIONS */
         let currentJDMatches = [];
         let currentJDTitle = "";
 
@@ -60,6 +60,7 @@
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/job_descriptions", {
                     method: "POST",
+                    headers: { "X-User-Role": (JSON.parse(localStorage.getItem('resumeUser') || '{}')).role || '' },
                     body: formData
                 });
                 const data = await response.json();
@@ -150,7 +151,8 @@
             if (!confirm("Are you sure you want to delete this job description?")) return;
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/job_descriptions/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
                 });
                 const data = await response.json();
                 if (data.success) {
@@ -187,7 +189,9 @@
             panel.scrollIntoView({ behavior: 'smooth' });
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/job_descriptions/${id}/match`);
+                const response = await fetch(`http://127.0.0.1:8000/api/job_descriptions/${id}/match`, {
+                    headers: getAuthHeaders()
+                });
                 const data = await response.json();
                 if (data.success) {
                     currentJDMatches = data.results;

@@ -1,5 +1,22 @@
 -- PostgreSQL Database Setup Script for Resume Screening Portal
--- Schema v3: Email field, replies table, sender_username linkage, safe startup
+-- Schema v4: Role-based auth — official accounts must be created manually.
+
+-- =============================================================================
+-- HOW TO CREATE AN OFFICIAL/ADMIN ACCOUNT
+-- =============================================================================
+-- Official accounts are NOT publicly registerable. To add a new official:
+--
+--   1. Generate a bcrypt hash for the password (e.g., using Python):
+--        python -c "import bcrypt; print(bcrypt.hashpw(b'YourPassword', bcrypt.gensalt()).decode())"
+--
+--   2. Insert directly into the users table:
+--        INSERT INTO users (username, email, password, role, name)
+--        VALUES ('admin_user', 'admin@example.com', '<bcrypt_hash>', 'official', 'Admin Name');
+--
+--   Note: The application seeds a default official account automatically at startup
+--   using the DEFAULT_ADMIN_USERNAME / DEFAULT_ADMIN_PASSWORD env vars.
+-- =============================================================================
+
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

@@ -1,67 +1,86 @@
-<!-- 1. LOGIN WRAPPER -->
-    <div id="loginWrapper" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; overflow-y: auto; width: 100%; padding: 40px 10px;">
-        <div class="glass-card login-card" style="width: 480px; padding: 40px; border-radius: 24px; box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10;">
-            <h2 style="font-weight: 800; margin-bottom: 5px; background: linear-gradient(135deg, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                ResumeX
-            </h2>
-            <p style="color: var(--text-secondary); margin-bottom: 25px; font-size: 15px; font-weight: 500;">
-                AI Resume Screening Portal
-            </p>
+<!-- AUTH ROOT — Three-state: candidate-login | candidate-register | admin-login -->
+<div id="loginWrapper" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; overflow-y: auto; width: 100%; padding: 40px 10px;">
+    <div class="glass-card login-card" style="width: 480px; padding: 40px; border-radius: 24px; box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10;">
 
-            <div class="d-flex mb-4" style="background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.05);">
-                <button type="button" id="tab-candidate" class="btn w-50" onclick="setLoginRole('candidate')"
-                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: white; background: #0072ff; transition: 0.3s;">
-                    Candidate
-                </button>
-                <button type="button" id="tab-official" class="btn w-50" onclick="setLoginRole('official')"
-                    style="border-radius: 8px; border: none; font-weight: 600; padding: 10px; color: var(--text-secondary); background: transparent; transition: 0.3s;">
-                    Official
-                </button>
+        <!-- BRAND HEADER -->
+        <h2 id="authBrandTitle" style="font-weight: 800; margin-bottom: 5px; background: linear-gradient(135deg, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            ResumeX
+        </h2>
+        <p id="authBrandSubtitle" style="color: var(--text-secondary); margin-bottom: 25px; font-size: 15px; font-weight: 500;">
+            AI Resume Screening Portal
+        </p>
+
+        <!-- ================================================ -->
+        <!-- VIEW 1: CANDIDATE LOGIN FORM (default)           -->
+        <!-- ================================================ -->
+        <div id="view-candidate-login">
+            <div class="mb-4" style="background: rgba(0,114,255,0.08); border: 1px solid rgba(0,114,255,0.18); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-person-circle" style="color: #00c6ff; font-size: 18px;"></i>
+                <span style="font-size: 13px; font-weight: 600; color: #a0c4ff;">Candidate Portal</span>
             </div>
 
-            <!-- LOGIN FORM -->
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm" onsubmit="handleCandidateLogin(event)">
                 <div class="mb-3 text-start">
                     <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Username</label>
-                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username" required>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username" required autocomplete="username">
                 </div>
                 <div class="mb-4 text-start">
                     <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Password</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
                 </div>
 
-                <div id="loginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);">
-                </div>
+                <div id="loginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);"></div>
 
-                <button type="submit" class="btn btn-primary w-100 py-3" style="border-radius: 12px; font-weight: 600; font-size: 16px;">
+                <button type="submit" id="candidateLoginBtn" class="btn btn-primary w-100 py-3" style="border-radius: 12px; font-weight: 600; font-size: 16px;">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Login to Portal
                 </button>
             </form>
 
-            <!-- REGISTER FORM -->
-            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+            <div class="mt-4">
+                <a href="javascript:void(0)" onclick="toggleAuthView('register')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
+                    Don't have an account? <strong>Register here</strong>
+                </a>
+            </div>
+
+            <!-- Divider -->
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 12px;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                <span style="font-size: 12px; color: #475569;">OR</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+            </div>
+
+            <button onclick="toggleAuthView('admin-login')" class="btn w-100 py-2" style="border-radius: 12px; font-weight: 600; font-size: 14px; border: 1px solid rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); color: #fbbf24; transition: 0.3s;" onmouseover="this.style.background='rgba(251,191,36,0.12)'" onmouseout="this.style.background='rgba(251,191,36,0.05)'">
+                <i class="bi bi-shield-lock me-2"></i>Official / Admin Login
+            </button>
+        </div>
+
+        <!-- ================================================ -->
+        <!-- VIEW 2: CANDIDATE REGISTER FORM                  -->
+        <!-- ================================================ -->
+        <div id="view-candidate-register" style="display: none;">
+            <div class="mb-4" style="background: rgba(0,176,155,0.08); border: 1px solid rgba(0,176,155,0.18); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-person-plus-fill" style="color: #00b09b; font-size: 18px;"></i>
+                <span style="font-size: 13px; font-weight: 600; color: #6ee7b7;">Create Candidate Account</span>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
                 <div class="mb-3 text-start">
                     <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Full Name</label>
                     <input type="text" id="registerName" class="form-control" placeholder="Enter your full name" required>
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Email Address</label>
-                    <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email address" required>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email address" required autocomplete="email">
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Username</label>
-                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username" required>
-                </div>
-                <div class="mb-3 text-start">
-                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Password</label>
-                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a password" required>
+                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username" required autocomplete="username">
                 </div>
                 <div class="mb-4 text-start">
-                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Register As</label>
-                    <select id="registerRole" class="form-select">
-                        <option value="candidate" style="background: #0f172a; color: white;">Candidate</option>
-                    </select>
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a strong password" required autocomplete="new-password">
                 </div>
+                <!-- NOTE: No role field — role is always 'candidate', enforced server-side -->
 
                 <div id="registerError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);"></div>
                 <div id="registerSuccess" class="text-success mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(0, 176, 155, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 176, 155, 0.2);"></div>
@@ -71,33 +90,60 @@
                 </button>
             </form>
 
-            <div class="mt-4" id="loginToggleArea">
-                <a href="javascript:void(0)" onclick="toggleAuthForm('register')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
-                    Don't have an account? Register here
+            <div class="mt-4">
+                <a href="javascript:void(0)" onclick="toggleAuthView('login')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
+                    Already have an account? <strong>Login here</strong>
                 </a>
-            </div>
-            <div class="mt-4" id="registerToggleArea" style="display: none;">
-                <a href="javascript:void(0)" onclick="toggleAuthForm('login')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
-                    Already have an account? Login here
-                </a>
-            </div>
-
-            <!-- Demo Access Panel -->
-            <div class="mt-4" style="font-size: 12.5px; color: #94a3b8; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
-                <strong style="color: #e2e8f0; display: block; margin-bottom: 2px;">Note:</strong>
-                <span id="demo-credentials" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Candidates must register. Official: <b style="color: #00c6ff;">official</b> / <b style="color: #00c6ff;">Admin@123</b></span>
-                </span>
-            </div>
-
-            <!-- Dynamic Job Openings Preview (Candidate Login only) -->
-            <div id="loginOpeningsPreview" class="mt-4 text-start" style="display: block;">
-                <h6 class="text-info fw-bold mb-2" style="font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
-                    <i class="bi bi-briefcase-fill text-info"></i> Current Open Positions
-                </h6>
-                <div id="loginJdList" style="max-height: 180px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; background: rgba(0,0,0,0.15);">
-                    <p class="text-muted text-center m-0" style="font-size: 12px; padding: 10px;">Loading active openings...</p>
-                </div>
             </div>
         </div>
+
+        <!-- ================================================ -->
+        <!-- VIEW 3: OFFICIAL / ADMIN LOGIN FORM              -->
+        <!-- ================================================ -->
+        <div id="view-admin-login" style="display: none;">
+            <div class="mb-4" style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-shield-lock-fill" style="color: #fbbf24; font-size: 18px;"></i>
+                <span style="font-size: 13px; font-weight: 600; color: #fcd34d;">Official / Admin Portal</span>
+            </div>
+
+            <div class="mb-4" style="font-size: 12.5px; color: #94a3b8; background: rgba(251,191,36,0.04); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(251,191,36,0.12); text-align: left;">
+                <i class="bi bi-info-circle me-1" style="color: #fbbf24;"></i>
+                Official accounts are managed by administrators. Contact your system admin if you need access.
+            </div>
+
+            <form id="adminLoginForm" onsubmit="handleOfficialLogin(event)">
+                <div class="mb-3 text-start">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Admin Username</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="Enter admin username" required autocomplete="username">
+                </div>
+                <div class="mb-4 text-start">
+                    <label class="form-label" style="font-size: 13px; font-weight: 500; margin-left: 4px;">Admin Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password" required autocomplete="current-password">
+                </div>
+
+                <div id="adminLoginError" class="text-danger mb-3" style="display: none; font-size: 14px; font-weight: 500; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 77, 77, 0.2);"></div>
+
+                <button type="submit" class="btn w-100 py-3" style="border-radius: 12px; font-weight: 600; font-size: 16px; background: linear-gradient(135deg, #b45309, #d97706); border: none; color: white;">
+                    <i class="bi bi-shield-lock me-2"></i>Access Official Portal
+                </button>
+            </form>
+
+            <div class="mt-4">
+                <a href="javascript:void(0)" onclick="toggleAuthView('login')" style="color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: 500;">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Candidate Login
+                </a>
+            </div>
+        </div>
+
+        <!-- Dynamic Job Openings Preview (Candidate Login only) -->
+        <div id="loginOpeningsPreview" class="mt-4 text-start" style="display: block;">
+            <h6 class="text-info fw-bold mb-2" style="font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-briefcase-fill text-info"></i> Current Open Positions
+            </h6>
+            <div id="loginJdList" style="max-height: 180px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; background: rgba(0,0,0,0.15);">
+                <p class="text-muted text-center m-0" style="font-size: 12px; padding: 10px;">Loading active openings...</p>
+            </div>
+        </div>
+
     </div>
+</div>

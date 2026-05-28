@@ -1,4 +1,4 @@
-﻿/* INQUIRIES & simulated REPLY FOR MESSAGES PAGE (OFFICIAL) */
+/* INQUIRIES & simulated REPLY FOR MESSAGES PAGE (OFFICIAL) */
         let officialEmailsCache = [];
 
         async function loadOfficialEmails() {
@@ -6,7 +6,9 @@
             const messagesCounter = document.getElementById('messagesCount');
             if (!listDiv) return;
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/emails");
+                const response = await fetch("http://127.0.0.1:8000/api/emails", {
+                    headers: getAuthHeaders()
+                });
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     officialEmailsCache = data;
@@ -72,7 +74,8 @@
             if (!confirm("Are you sure you want to delete this candidate email?")) return;
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/emails/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
                 });
                 const data = await response.json();
                 if (data.success) {

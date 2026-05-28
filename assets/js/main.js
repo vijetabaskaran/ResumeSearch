@@ -1,4 +1,4 @@
-﻿/* APP ONLOAD SYSTEM ENTRYPOINT */
+/* APP ONLOAD SYSTEM ENTRYPOINT */
 async function initializeApplication() {
     try {
         await loadApplicationPartials();
@@ -24,8 +24,10 @@ async function initializeApplication() {
         applyUserRole(userObj.role, userObj.name);
     } else {
         document.body.classList.add('logged-out');
-        setLoginRole('candidate');
+        // Default to candidate login view
+        toggleAuthView('login');
     }
 }
 
 document.addEventListener('DOMContentLoaded', initializeApplication);
+

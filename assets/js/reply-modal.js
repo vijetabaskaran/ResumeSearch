@@ -47,9 +47,7 @@
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/replies", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         message_id: emailId,
                         sender_username: senderUsername,

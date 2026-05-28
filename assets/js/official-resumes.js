@@ -1,9 +1,11 @@
-﻿/* RESUMES MANAGER FOR OFFICIALS */
+/* RESUMES MANAGER FOR OFFICIALS */
         async function loadOfficialResumes() {
             const listDiv = document.getElementById('resumesReceivedList');
             if (!listDiv) return;
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/resumes");
+                const response = await fetch("http://127.0.0.1:8000/api/resumes", {
+                    headers: getAuthHeaders()
+                });
                 const data = await response.json();
                 if (data.success) {
                     if (data.resumes.length === 0) {
@@ -68,7 +70,8 @@
             if (!confirm("Are you sure you want to delete this candidate resume? This deletes it from vector database index.")) return;
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/resumes/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
                 });
                 const data = await response.json();
                 if (data.success) {
