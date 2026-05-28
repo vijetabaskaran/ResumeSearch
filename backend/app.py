@@ -95,7 +95,8 @@ from database import (
     delete_job_description_by_id,
     save_reply,
     get_replies_for_user,
-    get_replies_for_message
+    get_replies_for_message,
+    get_faq_entries
 )
 
 
@@ -263,6 +264,7 @@ class ReplyRequest(BaseModel):
     message_id: str
     sender_username: str  # The official/admin sending the reply
     reply_text: str
+    is_faq: bool = False  # If True, publish this Q&A pair to the public FAQ section
 
 @app.post("/api/replies")
 def create_reply(request: ReplyRequest, http_request: Request):
@@ -271,9 +273,14 @@ def create_reply(request: ReplyRequest, http_request: Request):
     if not request.reply_text.strip():
         return {"success": False, "message": "Reply text cannot be empty."}
 
-    reply_id = save_reply(request.message_id, request.sender_username, request.reply_text.strip())
+    reply_id = save_reply(
+        request.message_id,
+        request.sender_username,
+        request.reply_text.strip(),
+        request.is_faq
+    )
     if reply_id:
-        return {"success": True, "message": "Reply sent successfully.", "id": reply_id}
+        return {"success": True, "message": "Reply sent successfully.", "id": reply_id, "is_faq": request.is_faq}
     else:
         return {"success": False, "message": "Failed to send reply."}
 
@@ -282,6 +289,17 @@ def get_user_replies(username: str):
     """Get all replies directed to messages sent by a specific candidate."""
     replies = get_replies_for_user(username)
     return {"success": True, "replies": replies}
+
+@app.get("/api/faq")
+def get_faq():
+    """Public: retrieve all Q&A pairs approved for FAQ display.
+    
+    No authentication required — any visitor (logged-in or not) can read the FAQ.
+    Returns only entries where is_faq=TRUE and neither the reply nor the original
+    message has been soft-deleted.
+    """
+    faqs = get_faq_entries()
+    return {"success": True, "faqs": faqs}
 
 # ==========================================
 # JOB DESCRIPTIONS

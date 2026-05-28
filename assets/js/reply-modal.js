@@ -10,6 +10,10 @@
             document.getElementById('replyToEmail').value = email.sender_email;
             document.getElementById('replySubject').value = `Re: ${email.subject}`;
             document.getElementById('replyMessageText').value = '';
+
+            // Always reset FAQ toggle to OFF — prevent accidental publishing
+            const faqToggle = document.getElementById('replyIsFaq');
+            if (faqToggle) faqToggle.checked = false;
             
             document.getElementById('replyOriginalSender').innerText = `From: ${email.sender_name} (${email.sender_email})`;
             document.getElementById('replyOriginalSubject').innerText = `Subject: ${email.subject}`;
@@ -29,6 +33,7 @@
             const toEmail = document.getElementById('replyToEmail').value;
             const subject = document.getElementById('replySubject').value;
             const text = document.getElementById('replyMessageText').value.trim();
+            const isFaq = document.getElementById('replyIsFaq')?.checked ?? false;
 
             if (!text) {
                 showNotification("Reply message cannot be empty.", "error");
@@ -51,13 +56,18 @@
                     body: JSON.stringify({
                         message_id: emailId,
                         sender_username: senderUsername,
-                        reply_text: text
+                        reply_text: text,
+                        is_faq: isFaq
                     })
                 });
                 const data = await response.json();
                 if (data.success) {
                     closeReplyModal();
-                    showNotification(`Professional reply sent successfully to ${toEmail}!`, 'success');
+                    if (isFaq) {
+                        showNotification(`Reply sent & published to public FAQ! 🌐`, 'success');
+                    } else {
+                        showNotification(`Professional reply sent successfully to ${toEmail}!`, 'success');
+                    }
                 } else {
                     showNotification(data.message || "Failed to save reply on server.", "error");
                 }
@@ -66,3 +76,4 @@
                 showNotification("Network error occurred while sending reply.", "error");
             }
         }
+

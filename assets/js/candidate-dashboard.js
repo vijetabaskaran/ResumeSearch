@@ -104,6 +104,9 @@
                     `;
 
                     data.replies.forEach(reply => {
+                        const faqBadge = reply.is_faq
+                            ? `<span class="faq-public-badge ms-2"><i class="bi bi-globe2 me-1"></i>Public FAQ</span>`
+                            : '';
                         html += `
                             <tr>
                                 <td style="font-size: 13px; color: var(--text-secondary); min-width: 140px;">${reply.created_at || ''}</td>
@@ -112,7 +115,7 @@
                                     <div style="font-size: 13px; color: var(--text-secondary); white-space: pre-wrap;">${reply.original_message || ''}</div>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-success"><i class="bi bi-reply-fill"></i> HR Response (from ${reply.sender_username}):</div>
+                                    <div class="fw-bold text-success"><i class="bi bi-reply-fill"></i> HR Response (from ${reply.sender_username}):${faqBadge}</div>
                                     <div style="font-size: 13.5px; color: #e2e8f0; white-space: pre-wrap; background: rgba(0, 180, 216, 0.05); padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid rgba(0, 180, 216, 0.1);">${reply.reply_text}</div>
                                 </td>
                             </tr>

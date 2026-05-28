@@ -318,8 +318,15 @@ def delete_message_by_id(message_id):
 # REPLY HELPERS
 # ==========================================
 
-def save_reply(message_id, sender_username, reply_text):
-    """Insert a reply to a specific message. Returns the reply ID or None."""
+def save_reply(message_id, sender_username, reply_text, is_faq: bool = False):
+    """Insert a reply to a specific message. Returns the reply ID or None.
+    
+    Args:
+        message_id: UUID of the original candidate message.
+        sender_username: Username of the official sending the reply.
+        reply_text: The reply content.
+        is_faq: If True, this Q&A pair is published to the public FAQ section.
+    """
     conn = None
     fallback_id = str(uuid.uuid4())
     new_reply = {
@@ -328,7 +335,8 @@ def save_reply(message_id, sender_username, reply_text):
         "sender_username": sender_username,
         "reply_text": reply_text,
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "is_deleted": False
+        "is_deleted": False,
+        "is_faq": is_faq
     }
     try:
         conn = get_connection()
@@ -338,8 +346,8 @@ def save_reply(message_id, sender_username, reply_text):
         conn.autocommit = True
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO replies (message_id, sender_username, reply_text) VALUES (%s, %s, %s) RETURNING id",
-                (message_id, sender_username, reply_text)
+                "INSERT INTO replies (message_id, sender_username, reply_text, is_faq) VALUES (%s, %s, %s, %s) RETURNING id",
+                (message_id, sender_username, reply_text, is_faq)
             )
             row = cursor.fetchone()
             return str(row[0]) if row else fallback_id
@@ -411,6 +419,73 @@ def get_replies_for_message(message_id):
         replies = [r for r in _FALLBACK_REPLIES
                    if r["message_id"] == message_id and not r.get("is_deleted", False)]
         return replies
+    finally:
+        if conn:
+            conn.close()
+
+def get_faq_entries():
+    """Retrieve all public FAQ entries (replies marked is_faq=TRUE), newest first.
+    
+    Returns a list of dicts containing:
+        - id, reply_text, sender_username, created_at (from replies)
+        - original_subject, original_message (from the joined messages row)
+    This endpoint is intentionally public — no auth required.
+    """
+    conn = None
+    try:
+        conn = get_connection()
+        if not conn:
+            # In-memory fallback: join replies + messages manually
+            faq_entries = []
+            for r in _FALLBACK_REPLIES:
+                if r.get("is_faq") and not r.get("is_deleted", False):
+                    # Find the original message
+                    orig = next(
+                        (m for m in _FALLBACK_MESSAGES
+                         if m["id"] == r["message_id"] and not m.get("is_deleted", False)),
+                        None
+                    )
+                    entry = dict(r)
+                    entry["original_subject"] = orig["subject"] if orig else ""
+                    entry["original_message"] = orig["message"] if orig else ""
+                    faq_entries.append(entry)
+            return list(reversed(faq_entries))
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    r.id,
+                    r.reply_text,
+                    r.sender_username,
+                    r.created_at,
+                    r.is_faq,
+                    m.subject  AS original_subject,
+                    m.message  AS original_message
+                FROM replies r
+                JOIN messages m ON r.message_id = m.id
+                WHERE r.is_faq = TRUE
+                  AND r.is_deleted = FALSE
+                  AND m.is_deleted = FALSE
+                ORDER BY r.created_at DESC
+                """
+            )
+            return _serialize_rows(cursor.fetchall())
+    except Exception as e:
+        print(f"Error getting FAQ entries (using fallback): {e}")
+        # Fallback on DB error
+        faq_entries = []
+        for r in _FALLBACK_REPLIES:
+            if r.get("is_faq") and not r.get("is_deleted", False):
+                orig = next(
+                    (m for m in _FALLBACK_MESSAGES
+                     if m["id"] == r["message_id"] and not m.get("is_deleted", False)),
+                    None
+                )
+                entry = dict(r)
+                entry["original_subject"] = orig["subject"] if orig else ""
+                entry["original_message"] = orig["message"] if orig else ""
+                faq_entries.append(entry)
+        return list(reversed(faq_entries))
     finally:
         if conn:
             conn.close()

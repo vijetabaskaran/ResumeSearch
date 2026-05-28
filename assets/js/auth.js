@@ -241,6 +241,10 @@ function applyUserRole(role, name) {
             <button id="btn-candidate-support-page" onclick="showPage('candidate-support-page')">
                 <i class="bi bi-envelope"></i> Contact Recruiter
             </button>
+            <button id="btn-candidate-faq-page" onclick="showPage('candidate-faq-page'); loadFaqEntries();">
+                <i class="bi bi-patch-question-fill"></i> FAQ
+                <span style="margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; background: rgba(255,190,50,0.15); border: 1px solid rgba(255,190,50,0.3); color: #ffbe32;">Public</span>
+            </button>
             <button id="btn-settings" onclick="showPage('settings')">
                 <i class="bi bi-gear"></i> Portal Settings
             </button>

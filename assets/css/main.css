@@ -1,4 +1,4 @@
-﻿:root {
+:root {
             --bg-dark: #070913;
             --sidebar-bg: rgba(10, 15, 30, 0.95);
             --glass-bg: rgba(15, 23, 42, 0.65);
@@ -567,3 +567,265 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             color: white;
         }
+
+        /* ============================================================
+           FAQ TOGGLE SWITCH (Reply Modal)
+           ============================================================ */
+        .faq-toggle-row {
+            background: rgba(255, 190, 50, 0.06);
+            border: 1px solid rgba(255, 190, 50, 0.2);
+            border-radius: 14px;
+            padding: 14px 18px;
+            transition: border-color 0.25s ease, background 0.25s ease;
+        }
+
+        .faq-toggle-row:has(input:checked) {
+            background: rgba(255, 190, 50, 0.12);
+            border-color: rgba(255, 190, 50, 0.45);
+        }
+
+        .faq-toggle-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffbe32;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .faq-toggle-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Pill toggle switch */
+        .faq-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            cursor: pointer;
+        }
+
+        .faq-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .faq-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 26px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .faq-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            top: 3px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .faq-switch input:checked + .faq-slider {
+            background: linear-gradient(135deg, #f59e0b, #ffbe32);
+            border-color: #ffbe32;
+        }
+
+        .faq-switch input:checked + .faq-slider::before {
+            transform: translateX(22px);
+            background: white;
+        }
+
+        /* "Public" badge pill on the label */
+        .faq-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 190, 50, 0.15);
+            border: 1px solid rgba(255, 190, 50, 0.35);
+            color: #ffbe32;
+        }
+
+        /* Public FAQ badge on candidate replies table */
+        .faq-public-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 6px;
+            background: rgba(255, 190, 50, 0.12);
+            border: 1px solid rgba(255, 190, 50, 0.3);
+            color: #ffbe32;
+            vertical-align: middle;
+        }
+
+        /* ============================================================
+           FAQ ACCORDION CARDS (Candidate FAQ Page)
+           ============================================================ */
+        .faq-card {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .faq-card:hover {
+            border-color: rgba(255, 190, 50, 0.25);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .faq-card-header {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px 22px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .faq-card-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .faq-card-header--open {
+            background: rgba(255, 190, 50, 0.05) !important;
+            border-bottom: 1px solid rgba(255, 190, 50, 0.15);
+        }
+
+        .faq-q-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(255, 190, 50, 0.12);
+            border: 1px solid rgba(255, 190, 50, 0.25);
+            color: #ffbe32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .faq-question-text {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.45;
+        }
+
+        .faq-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .faq-chevron i {
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .faq-card-body {
+            padding: 0 22px 22px;
+        }
+
+        .faq-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #00c6ff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .faq-section-label.answer-label {
+            color: #4ade80;
+        }
+
+        .faq-full-question {
+            background: rgba(0, 198, 255, 0.04);
+            border: 1px solid rgba(0, 198, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .faq-question-body {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .faq-answer-block {
+            background: rgba(74, 222, 128, 0.04);
+            border: 1px solid rgba(74, 222, 128, 0.12);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .faq-answer-body {
+            font-size: 14px;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            line-height: 1.65;
+        }
+
+        /* ============================================================
+           LIGHT MODE OVERRIDES — FAQ Components
+           ============================================================ */
+        body.light-mode .faq-toggle-row {
+            background: rgba(245, 158, 11, 0.06);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        body.light-mode .faq-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        body.light-mode .faq-question-text {
+            color: #0f172a;
+        }
+
+        body.light-mode .faq-question-body {
+            color: #475569;
+        }
+
+        body.light-mode .faq-answer-body {
+            color: #1e293b;
+        }
+
+        body.light-mode .faq-full-question {
+            background: rgba(0, 114, 255, 0.04);
+            border-color: rgba(0, 114, 255, 0.1);
+        }
+
+        body.light-mode .faq-answer-block {
+            background: rgba(22, 163, 74, 0.04);
+            border-color: rgba(22, 163, 74, 0.12);
+        }
+
+        body.light-mode .faq-card-header--open {
+            background: rgba(245, 158, 11, 0.05) !important;
+        }
+

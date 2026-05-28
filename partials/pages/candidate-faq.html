@@ -1,0 +1,41 @@
+<!-- =======================================
+                         G. CANDIDATE FAQ PAGE
+                         ======================================= -->
+                    <div id="candidate-faq-page" class="page">
+                        <h2 class="section-title fw-bold text-light mb-2">
+                            <i class="bi bi-patch-question-fill me-2 text-warning"></i>Frequently Asked Questions
+                        </h2>
+                        <p class="text-secondary mb-5" style="font-size: 15px; max-width: 620px;">
+                            Official answers from our recruitment team — curated from real candidate inquiries.
+                        </p>
+
+                        <!-- Search Bar -->
+                        <div class="glass-card mb-4 p-3" style="border-radius: 16px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-search text-info" style="font-size: 18px; flex-shrink: 0;"></i>
+                                <input
+                                    type="text"
+                                    id="faqSearchInput"
+                                    class="form-control"
+                                    placeholder="Search FAQ by keyword..."
+                                    oninput="filterFaq(this.value)"
+                                    style="border: none; background: transparent; box-shadow: none; padding: 6px 0; font-size: 15px;"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- FAQ Count Badge -->
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <span class="text-secondary" style="font-size: 14px;">Showing</span>
+                            <span id="faqCount" class="badge" style="background: rgba(0,198,255,0.15); color: #00c6ff; border: 1px solid rgba(0,198,255,0.25); border-radius: 8px; font-size: 13px;">0</span>
+                            <span class="text-secondary" style="font-size: 14px;">public FAQ entries</span>
+                        </div>
+
+                        <!-- FAQ Accordion List -->
+                        <div id="faqEntriesList">
+                            <div class="d-flex align-items-center justify-content-center py-5 gap-3 text-secondary">
+                                <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+                                Loading FAQ entries...
+                            </div>
+                        </div>
+                    </div>

@@ -1,4 +1,4 @@
-﻿const APP_PARTIALS = {
+const APP_PARTIALS = {
     auth: 'partials/auth/login.html',
     shell: 'partials/layout/app-shell.html',
     widgets: 'partials/widgets/chatbot.html',
@@ -12,6 +12,7 @@
         'partials/pages/candidate-dashboard.html',
         'partials/pages/candidate-upload.html',
         'partials/pages/candidate-support.html',
+        'partials/pages/candidate-faq.html',
         'partials/pages/settings.html'
     ]
 };

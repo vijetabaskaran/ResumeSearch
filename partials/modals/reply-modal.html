@@ -1,4 +1,4 @@
-﻿<!-- 3. EMAIL REPLY MODAL (SELF-CONTAINED CSS OVERLAY) -->
+<!-- 3. EMAIL REPLY MODAL (SELF-CONTAINED CSS OVERLAY) -->
     <div id="replyModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10500; justify-content: center; align-items: center;">
         <div class="glass-card" style="width: 540px; max-width: 90%; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 25px 60px rgba(0,0,0,0.6); border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; padding: 0;">
             <div style="background: linear-gradient(to right, #0072ff, #00c6ff); padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
@@ -29,6 +29,24 @@
                     <div class="mb-4">
                         <label class="form-label">Draft Message Reply</label>
                         <textarea id="replyMessageText" class="form-control" rows="5" required placeholder="Type your professional response to candidate here..." style="border-radius: 12px; resize: none;"></textarea>
+                    </div>
+                    <!-- FAQ Publish Toggle -->
+                    <div class="faq-toggle-row mb-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="faq-toggle-label">
+                                    <i class="bi bi-globe2 me-2"></i>Allow to Post as FAQ
+                                    <span class="faq-badge ms-2">Public</span>
+                                </div>
+                                <div class="faq-toggle-desc mt-1">
+                                    Enable to publish this Q&amp;A as a public FAQ entry visible to all candidates.
+                                </div>
+                            </div>
+                            <label class="faq-switch ms-3 flex-shrink-0">
+                                <input type="checkbox" id="replyIsFaq" />
+                                <span class="faq-slider"></span>
+                            </label>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-secondary px-4 py-2.5" onclick="closeReplyModal()" style="border-radius: 10px;">Cancel</button>
