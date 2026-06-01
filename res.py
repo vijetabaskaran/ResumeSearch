@@ -118,6 +118,8 @@ async def insert_resume(
 
         else:
 
+            print("Reading PDF from uploaded file...")
+
             contents = await file.read()
 
             with open("uploaded.pdf", "wb") as f:
@@ -208,6 +210,8 @@ Resume:
 
             }
 
+            print("Point Struct Created")
+
         )
 
         client.upsert(
@@ -217,6 +221,8 @@ Resume:
             points=[point]
 
         )
+
+        print("Resume Inserted Successfully")
 
         return {
 

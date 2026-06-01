@@ -1,6 +1,11 @@
-﻿/* FLOATING TOAST SYSTEM NOTIFICATION */
-        function showNotification(message, type = 'success') {
-            const container = document.getElementById('toastContainer') || createToastContainer();
+/* FLOATING TOAST SYSTEM NOTIFICATION */
+console.log("notifications.js script execution start");
+
+function showNotification(message, type = 'success') {
+    console.log(`showNotification called: "${message}" [type: ${type}]`);
+    const container = document.getElementById('toastContainer') || createToastContainer();
+    console.log("Toast container reference:", container);
+
             
             const toast = document.createElement('div');
             toast.className = `custom-toast animate-slide-in ${type}`;
@@ -61,3 +66,7 @@
             }
             return container;
         }
+
+        window.showNotification = showNotification;
+        console.log("notifications.js initialized globally as window.showNotification");
+

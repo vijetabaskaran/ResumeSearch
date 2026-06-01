@@ -1,4 +1,4 @@
-﻿<!-- =======================================
+<!-- =======================================
                          G. CANDIDATE RESUME UPLOAD PAGE
                          ======================================= -->
                     <div id="candidate-upload-page" class="page">
@@ -8,7 +8,8 @@
                                 Get your resume indexed with our advanced AI. Upload your resume as a PDF file or provide a PDF URL link.
                             </p>
 
-                            <form id="resumeForm">
+                            <!-- onsubmit="return false" prevents any Enter-key reload -->
+                            <form id="resumeForm" onsubmit="return false;">
                                 <div class="mb-4">
                                     <label class="form-label">Candidate Name</label>
                                     <input type="text" class="form-control" id="candidateName" placeholder="Enter your full name" required />
@@ -42,15 +43,21 @@
                                     <input type="url" class="form-control" id="resumeUrl" placeholder="Enter PDF URL (e.g. https://example.com/resume.pdf)" />
                                 </div>
 
-                                <!-- Dynamic alert message (Fix for the successMessage bug) -->
+                                <!-- Processing Loader -->
                                 <div id="uploadLoader" style="display: none;" class="mb-3 text-info fw-bold">
                                     <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
                                     AI is analyzing your resume and extracting skills... Please wait...
                                 </div>
 
+                                <!-- Inline success result (replaces alert popup) -->
+                                <div id="uploadResult" class="mb-4 p-4 rounded-3" style="display: none; background: rgba(0,176,155,0.08); border: 1px solid rgba(0,176,155,0.25); border-radius: 14px;">
+                                </div>
+
+                                <!-- type="button" — never submits the form, no page reload ever -->
                                 <button type="button" class="btn btn-primary w-100 py-3" onclick="uploadResume()">
-                                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload & Process Resume
+                                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload &amp; Process Resume
                                 </button>
                             </form>
                         </div>
                     </div>
+

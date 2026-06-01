@@ -119,6 +119,15 @@ class RegisterRequest(BaseModel):
     email: str  # Candidate email collected during registration
     # NOTE: role is always hardcoded to "candidate" — not accepted from frontend
 
+class LogRequest(BaseModel):
+    level: str
+    message: str
+
+@app.post("/api/log")
+def log_from_browser(request: LogRequest):
+    print(f"\n[BROWSER LOG] [{request.level.upper()}] {request.message}")
+    return {"status": "ok"}
+
 @app.post("/api/login")
 def candidate_login(request: LoginRequest):
     """

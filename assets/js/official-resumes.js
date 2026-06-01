@@ -42,7 +42,7 @@
                         html += `
                             <tr id="resume-row-${resume.id}">
                                 <td class="fw-bold text-light">${resume.name}</td>
-                                <td><span style="font-size: 13.5px; color: var(--text-secondary);">${resume.skills || 'None'}</span></td>
+                                <td>${formatSkillsCell(resume.skills, resume.name)}</td>
                                 <td>${linkHtml}</td>
                                 <td>
                                     <button class="btn btn-sm btn-danger" onclick="deleteResume('${resume.id}')"><i class="bi bi-trash"></i> Delete</button>

@@ -103,7 +103,7 @@ function renderFaqCards(entries, container, badge) {
                         <div class="faq-question-body">${questionFull}</div>
                     </div>
                     <div class="faq-answer-block">
-                        <div class="faq-section-label answer-label"><i class="bi bi-patch-check-fill me-2"></i>Official Answer</div>
+                        <div class="faq-section-label answer-label"><i class="bi bi-patch-check-fill me-2"></i>Recruiter's Answer</div>
                         <div class="faq-answer-body">${answerFull}</div>
                     </div>
                 </div>

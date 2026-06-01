@@ -1,4 +1,4 @@
-﻿/* SEARCH SKILL (SEMANTIC SEARCH) */
+/* SEARCH SKILL (SEMANTIC SEARCH) */
         let lastSearchResults = [];
 
         async function searchSkill() {
@@ -55,7 +55,7 @@
                     html += `
                         <tr>
                             <td class="fw-bold text-light">${item.name}</td>
-                            <td><span style="font-size: 13.5px; color: var(--text-secondary);">${item.skills || 'None'}</span></td>
+                            <td>${formatSkillsCell(item.skills, item.name)}</td>
                             <td class="fw-bold text-success">${item.match_percentage}</td>
                             <td>${resumeDisplay}</td>
                         </tr>

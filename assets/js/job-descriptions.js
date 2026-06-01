@@ -235,7 +235,7 @@
                         html += `
                             <tr>
                                 <td class="fw-bold text-light">${candidate.name}</td>
-                                <td><span style="font-size: 13.5px; color: var(--text-secondary);">${candidate.skills || 'None'}</span></td>
+                                <td>${formatSkillsCell(candidate.skills, candidate.name)}</td>
                                 <td class="fw-bold ${scoreColor}">${candidate.match_percentage}</td>
                                 <td>${linkHtml}</td>
                             </tr>

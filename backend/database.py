@@ -11,7 +11,7 @@ load_dotenv()
 # Get database connection URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:psqlpassword@localhost:5432/resumesearch")
 DEFAULT_ADMIN_USERNAME = os.getenv("DEFAULT_ADMIN_USERNAME", "official").lower().strip()
-DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD", "Admin@123")
+DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD", "Official@121")
 DEFAULT_ADMIN_EMAIL = os.getenv("DEFAULT_ADMIN_EMAIL", "official@idealtechlabs.com")
 
 # ==========================================

@@ -1134,3 +1134,112 @@
             color: #1e293b;
         }
 
+        /* ============================================================
+           STABILIZED DASHBOARD PANELS
+           ============================================================ */
+        .activity-card {
+            height: 360px !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .activity-card #recentActivityFeed {
+            flex: 1 !important;
+            overflow-y: auto !important;
+            padding-right: 8px !important;
+            scrollbar-width: thin;
+        }
+
+        /* Elegant scrollbar style for activity feed */
+        .activity-card #recentActivityFeed::-webkit-scrollbar {
+            width: 6px;
+        }
+        .activity-card #recentActivityFeed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .activity-card #recentActivityFeed::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 3px;
+        }
+        .activity-card #recentActivityFeed::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .activity-card #recentActivityFeed::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        body.light-mode .activity-card #recentActivityFeed::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .quick-actions-card {
+            height: 360px !important;
+        }
+
+        /* ============================================================
+           SKILLS DETAILS MODAL & PILLS
+           ============================================================ */
+        .skill-badge-pill {
+            background: rgba(0, 198, 255, 0.08);
+            color: #00c6ff;
+            border: 1px solid rgba(0, 198, 255, 0.22);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .skill-badge-pill:hover {
+            background: rgba(0, 198, 255, 0.18);
+            border-color: rgba(0, 198, 255, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 198, 255, 0.18);
+        }
+
+        body.light-mode .skill-badge-pill {
+            background: rgba(0, 114, 255, 0.06);
+            color: #0072ff;
+            border-color: rgba(0, 114, 255, 0.2);
+        }
+
+        body.light-mode .skill-badge-pill:hover {
+            background: rgba(0, 114, 255, 0.12);
+            border-color: rgba(0, 114, 255, 0.35);
+        }
+
+        .btn-close-custom {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .btn-close-custom:hover {
+            color: #ff4d4d;
+            transform: rotate(90deg);
+        }
+
+        /* Scrollbar for modal skills list */
+        #modalSkillsList::-webkit-scrollbar {
+            width: 5px;
+        }
+        #modalSkillsList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #modalSkillsList::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        body.light-mode #modalSkillsList::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+
